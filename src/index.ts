@@ -4,8 +4,10 @@ import {runDb} from "./db/db";
 import {clearDatabaseRouter} from "./routes/clearDatabase-router";
 import {postsRouter} from "./routes/posts-router";
 
+require('dotenv').config()
+
 export const app = express()
-const port = 5000
+const port = process.env.PORT
 
 // const parserMiddleware = bodyParser({})
 // app.use(parserMiddleware)

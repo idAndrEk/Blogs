@@ -18,8 +18,9 @@ const blogs_router_1 = require("./routes/blogs-router");
 const db_1 = require("./db/db");
 const clearDatabase_router_1 = require("./routes/clearDatabase-router");
 const posts_router_1 = require("./routes/posts-router");
+require('dotenv').config();
 exports.app = (0, express_1.default)();
-const port = 5000;
+const port = process.env.PORT;
 // const parserMiddleware = bodyParser({})
 // app.use(parserMiddleware)
 exports.app.use(express_1.default.json());
