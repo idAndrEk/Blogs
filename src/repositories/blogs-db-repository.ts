@@ -1,6 +1,6 @@
 import {blogsCollection} from "../db/db";
-import {BlogInputType, BlogViewType} from "../types/BlogType";
-import {randomUUID} from "crypto";
+import {BlogInputType, BlogMongoType, BlogViewType} from "../types/BlogType";
+import {ObjectId} from "mongodb";
 
 
 export const blogsRepository = {
@@ -8,34 +8,53 @@ export const blogsRepository = {
         const filter: any = {}
         if (name) {
             filter.name = {$regex: name}
-            console.log('Filter:', filter);
+            // console.log('Filter:', filter);
         }
-        const filteredBlogs: BlogViewType[] = await blogsCollection.find({}).toArray();
-        return filteredBlogs;
+        const filteredBlogs: BlogMongoType[] = await blogsCollection.find(filter).toArray();
+
+        const blogsWithId: BlogViewType[] = filteredBlogs.map(blog => ({
+            id: blog._id.toString(),
+            name: blog.name,
+            description: blog.description,
+            websiteUrl: blog.websiteUrl,
+        }));
+
+        return blogsWithId;
     },
 
     async findBlogById(id: string): Promise<BlogViewType | null> {
-        let blog: BlogViewType | null = await blogsCollection.findOne({id: id})
+        const blog: BlogMongoType | null = await blogsCollection.findOne({_id: new ObjectId(id)});
+
         if (blog) {
-            return blog
+            return {
+                id: blog._id.toString(),
+                name: blog.name,
+                description: blog.description,
+                websiteUrl: blog.websiteUrl,
+            };
         } else {
-            return null
+            return null;
         }
     },
 
     async createBlog({name, description, websiteUrl}: BlogInputType): Promise<BlogViewType> {
-        const newBlog = {
-            id: randomUUID(),
+        const newBlog: BlogMongoType = {
+            _id: new ObjectId(),
             name: name,
             description: description,
             websiteUrl: websiteUrl
         }
         const result = await blogsCollection.insertOne(newBlog)
-        return newBlog
+        return {
+            id: result.insertedId.toString(),
+            name: name,
+            description: description,
+            websiteUrl: websiteUrl
+        }
     },
 
     async updateBlog(id: string, {name, description, websiteUrl}: BlogInputType): Promise<boolean> {
-        const result = await blogsCollection.updateOne({id: id}, {
+        const result = await blogsCollection.updateOne({_id: new ObjectId(id)}, {
             $set: {
                 name: name,
                 description: description,
@@ -46,7 +65,7 @@ export const blogsRepository = {
     },
 
     async deleteBlog(id: string): Promise<boolean> {
-        const result = await blogsCollection.deleteOne({id: id})
+        const result = await blogsCollection.deleteOne({_id: new ObjectId(id)})
         return result.deletedCount === 1
     }
 }

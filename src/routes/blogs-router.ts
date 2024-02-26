@@ -1,6 +1,6 @@
 import {Request, Response, Router} from "express";
 import {blogsRepository} from "../repositories/blogs-db-repository";
-import {inputValidationMiddleware} from "../midlewares/input-validation-middleware";
+import validateObjectIdMiddleware, {inputValidationMiddleware} from "../midlewares/input-validation-middleware";
 import {authBasicMiddleware} from "../midlewares/auth-middleware";
 import {BlogInputType, BlogViewType} from "../types/BlogType";
 import {BlogValidation} from "../midlewares/Blog-validation";
@@ -20,6 +20,7 @@ blogsRouter.get('/',
     })
 
 blogsRouter.get('/:id',
+    validateObjectIdMiddleware,
     async (req: Request, res: Response) => {
         try {
             let blog = await blogsRepository.findBlogById(req.params.id)
@@ -51,6 +52,7 @@ blogsRouter.post('/',
     })
 
 blogsRouter.put('/:id',
+    validateObjectIdMiddleware,
     authBasicMiddleware,
     BlogValidation,
     inputValidationMiddleware,
@@ -72,6 +74,7 @@ blogsRouter.put('/:id',
     })
 
 blogsRouter.delete('/:id',
+    validateObjectIdMiddleware,
     authBasicMiddleware,
     async (req: Request, res: Response) => {
         try {

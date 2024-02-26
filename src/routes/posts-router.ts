@@ -1,5 +1,5 @@
 import {Request, Response, Router} from "express";
-import {inputValidationMiddleware} from "../midlewares/input-validation-middleware";
+import validateObjectIdMiddleware, {inputValidationMiddleware} from "../midlewares/input-validation-middleware";
 import {authBasicMiddleware} from "../midlewares/auth-middleware";
 import {postsRepository} from "../repositories/posts-db-repository";
 import {PostInputType, PostViewType} from "../types/PostType";
@@ -20,6 +20,7 @@ postsRouter.get('/',
     })
 
 postsRouter.get('/:id',
+    validateObjectIdMiddleware,
     async (req: Request, res: Response) => {
         try {
             let post = await postsRepository.findPostById(req.params.id)
@@ -51,6 +52,7 @@ postsRouter.post('/',
     })
 
 postsRouter.put('/:id',
+    validateObjectIdMiddleware,
     authBasicMiddleware,
     PostValidation,
     inputValidationMiddleware,
@@ -72,6 +74,7 @@ postsRouter.put('/:id',
     })
 
 postsRouter.delete('/:id',
+    validateObjectIdMiddleware,
     authBasicMiddleware,
     async (req: Request, res: Response) => {
         try {

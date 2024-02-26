@@ -32,10 +32,10 @@ describe('Blogs API', () => {
         expect(response.body).toEqual(expect.any(Array));
     });
 
-    //Тест на получение блога по несуществующему ID
+    //Тест на получение блога по не правильному формату ID
     it('GET /blogs/:id should return 404 for non-existent blog', async () => {
-        const response = await request(app).get('/blogs/99999');
-        expect(response.status).toBe(HTTP_STATUSES.NOT_FOUND_404);
+        const response = await request(app).get('/blogs/111');
+        expect(response.status).toBe(HTTP_STATUSES.BAD_REQUEST_400);
     });
 
 // Тест для получения блога по ID
@@ -100,7 +100,7 @@ describe('Blogs API', () => {
         expect(response.status).toBe(401);
     });
 
-    //Тест на обновление несуществующего блога
+    //Тест на обновление несуществующего по не правильному формату ID
     it('PUT /blogs/:id should return 404 for updating non-existent blog', async () => {
         const nonExistentBlogId = 99999; // Предполагаемый несуществующий ID блога
 
@@ -113,7 +113,7 @@ describe('Blogs API', () => {
                 websiteUrl: 'https://updated-test-blog.com',
             });
 
-        expect(response.status).toBe(HTTP_STATUSES.NOT_FOUND_404);
+        expect(response.status).toBe(HTTP_STATUSES.BAD_REQUEST_400);
     });
 
     // Тест для обновления блога
@@ -136,13 +136,13 @@ describe('Blogs API', () => {
         expect(response.status).toBe(401);
     });
 
-    //Тест на удаление несуществующего блога
+    //Тест на удаление по не правильному формату ID
     it('DELETE /blogs/:id should return 404 for deleting non-existent blog', async () => {
         const response = await request(app)
             .delete('/blogs/99999')
             .set('Authorization', authHeader);
 
-        expect(response.status).toBe(HTTP_STATUSES.NOT_FOUND_404);
+        expect(response.status).toBe(HTTP_STATUSES.BAD_REQUEST_400);
     });
 
     // Тест для удаления блога

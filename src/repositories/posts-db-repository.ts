@@ -1,6 +1,7 @@
 import {postsCollection} from "../db/db";
-import {PostInputType, PostViewType} from "../types/PostType";
+import {PostInputType, PostMongoType, PostViewType} from "../types/PostType";
 import {randomUUID} from "crypto";
+import {ObjectId} from "mongodb";
 
 
 export const postsRepository = {
@@ -8,50 +9,77 @@ export const postsRepository = {
         const filter: any = {}
         if (title) {
             filter.name = {$regex: title}
-            console.log('Filter:', filter);
         }
-        const filteredBlogs: PostViewType[] = await postsCollection.find({}).toArray();
-        return filteredBlogs;
+        const filteredPosts: PostMongoType[] = await postsCollection.find(filter).toArray();
+
+        const postsWithId: PostViewType[] = filteredPosts.map(post => ({
+            id: post._id.toString(),
+            title: post.title,
+            shortDescription: post.shortDescription,
+            content: post.content,
+            blogId: post.blogId,
+            blogName: post.blogName
+        }))
+        return postsWithId
     },
 
     async findPostById(id: string): Promise<PostViewType | null> {
-        let post: PostViewType | null = await postsCollection.findOne({id: id})
+        const post: PostMongoType | null = await postsCollection.findOne({_id: new ObjectId(id)})
         if (post) {
-            return post
+            return {
+                id: post._id.toString(),
+                title: post.title,
+                shortDescription: post.shortDescription,
+                content: post.content,
+                blogId: post.blogId,
+                blogName: post.blogName
+            }
         } else {
-
             return null
         }
     },
 
-    async createPost({title, shortDescription, content, blogId,blogName}: PostInputType): Promise<PostViewType> {
-        const newBlog = {
-            id:randomUUID(),
+    async createPost({title, shortDescription, content, blogId, blogName}: PostInputType): Promise<PostViewType> {
+        const newPost: PostMongoType = {
+            _id: new ObjectId(),
             title: title,
-            shortDescription:shortDescription,
-            content:content,
+            shortDescription: shortDescription,
+            content: content,
             blogId: blogId,
-            blogName:blogName
+            blogName: blogName
         }
-        const result = await postsCollection.insertOne(newBlog)
-        return newBlog
+        const result = await postsCollection.insertOne(newPost)
+        return {
+            id: result.insertedId.toString(),
+            title: title,
+            shortDescription: shortDescription,
+            content: content,
+            blogId: blogId,
+            blogName: blogName
+        }
     },
 
-    async updatePost(id: string, {title, shortDescription, content, blogId,blogName}: PostInputType): Promise<boolean> {
-        const result = await postsCollection.updateOne({id: id}, {
+    async updatePost(id: string, {
+        title,
+        shortDescription,
+        content,
+        blogId,
+        blogName
+    }: PostInputType): Promise<boolean> {
+        const result = await postsCollection.updateOne({_id: new ObjectId(id)}, {
             $set: {
                 title: title,
-                shortDescription:shortDescription,
-                content:content,
+                shortDescription: shortDescription,
+                content: content,
                 blogId: blogId,
-                blogName:blogName
+                blogName: blogName
             }
         })
         return result.matchedCount === 1
     },
 
     async deletePost(id: string): Promise<boolean> {
-        const result = await postsCollection.deleteOne({id: id})
+        const result = await postsCollection.deleteOne({_id: new ObjectId(id)})
         return result.deletedCount === 1
     }
 }

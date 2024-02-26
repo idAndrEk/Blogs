@@ -17,3 +17,18 @@ export const inputValidationMiddleware = (req: Request, res: Response, next: Nex
         next();
     }
 };
+
+const validateObjectIdMiddleware = (req: Request, res: Response, next: NextFunction) => {
+    const objectIdPattern = /^[0-9a-fA-F]{24}$/;
+    const { id } = req.params;
+
+    if (!objectIdPattern.test(id)) {
+        console.error("Invalid ObjectId format");
+        res.sendStatus(400); // Bad Request
+        return;
+    }
+
+    next();
+};
+
+export default validateObjectIdMiddleware;
