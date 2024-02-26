@@ -4,7 +4,8 @@ import {PostViewType} from "../types/PostType";
 
 require('dotenv').config()
 
-const mongoUri = process.env.MONGO_URL || 'mongodb://0.0.0.0:27017'
+// const mongoUri = process.env.MONGO_URL || 'mongodb://0.0.0.0:27017'
+const mongoUri = "mongodb+srv://AndreyId:23717193@cluster0.wsvyz5w.mongodb.net/" || 'mongodb://0.0.0.0:27017'
 
 const client = new MongoClient(mongoUri)
 
