@@ -4,6 +4,7 @@ import validateObjectIdMiddleware, {inputValidationMiddleware} from "../midlewar
 import {authBasicMiddleware} from "../midlewares/auth-middleware";
 import {BlogInputType, BlogViewType} from "../types/BlogType";
 import {BlogValidation} from "../midlewares/Blog-validation";
+import {log} from "util";
 
 
 export const blogsRouter = Router({})
