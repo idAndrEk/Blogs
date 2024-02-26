@@ -34,9 +34,18 @@ describe('Posts API', () => {
         expect(response.body).toEqual(expect.any(Array));
     });
 
-    //Тест на получение поста по несуществующему ID
+    //Тест на получение поста по не правильному формату ID
     it('GET /posts/:id should return 404 for non-existent post', async () => {
         const response = await request(app).get('/posts/99999');
+        expect(response.status).toBe(HTTP_STATUSES.BAD_REQUEST_400);
+    });
+
+    // Тест для получения поста по существующему формату ID, но несуществующему ID
+    it('GET /posts/:id should return 404 for non-existent post with valid format', async () => {
+        const nonExistentBlogId = '60b6ff471d8a5d001f5f1581'; // Предполагаемый несуществующий ID блога
+
+        const response = await request(app).get(`/posts/${nonExistentBlogId}`);
+
         expect(response.status).toBe(HTTP_STATUSES.NOT_FOUND_404);
     });
 
@@ -122,7 +131,7 @@ describe('Posts API', () => {
         expect(response.status).toBe(401);
     });
 
-    //Тест на обновление несуществующего поста
+    //Тест на обновление по не правильному формату ID
     it('PUT /posts/:id should return 404 for updating non-existent posts', async () => {
         const nonExistentPostId = 99999; // Предполагаемый несуществующий ID поста
 
@@ -137,7 +146,7 @@ describe('Posts API', () => {
                 blogName: 'Some Blog',
             });
 
-        expect(response.status).toBe(HTTP_STATUSES.NOT_FOUND_404);
+        expect(response.status).toBe(HTTP_STATUSES.BAD_REQUEST_400);
     });
 
     // Тест для обновления поста
@@ -182,7 +191,7 @@ describe('Posts API', () => {
         expect(response.status).toBe(401);
     });
 
-    //Тест на удаление несуществующего поста
+    //Тест на удаление по не правильному формату ID
     it('DELETE /posts/:id should return 404 for deleting non-existent blog', async () => {
         const response = await request(app)
             .delete('/posts/99999')

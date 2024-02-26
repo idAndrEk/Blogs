@@ -38,6 +38,15 @@ describe('Blogs API', () => {
         expect(response.status).toBe(HTTP_STATUSES.BAD_REQUEST_400);
     });
 
+    // Тест для получения блога по существующему формату ID, но несуществующему ID
+    it('GET /blogs/:id should return 404 for non-existent blog with valid format', async () => {
+        const nonExistentBlogId = '60b6ff471d8a5d001f5f1581'; // Предполагаемый несуществующий ID блога
+
+        const response = await request(app).get(`/blogs/${nonExistentBlogId}`);
+
+        expect(response.status).toBe(HTTP_STATUSES.NOT_FOUND_404);
+    });
+
 // Тест для получения блога по ID
     it('GET /blogs/:id should return a specific blog', async () => {
         const response = await request(app).get(`/blogs/${testBlogId}`);
@@ -100,7 +109,7 @@ describe('Blogs API', () => {
         expect(response.status).toBe(401);
     });
 
-    //Тест на обновление несуществующего по не правильному формату ID
+    //Тест на обновление по не правильному формату ID
     it('PUT /blogs/:id should return 404 for updating non-existent blog', async () => {
         const nonExistentBlogId = 99999; // Предполагаемый несуществующий ID блога
 

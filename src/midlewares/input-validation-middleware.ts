@@ -12,7 +12,7 @@ export const inputValidationMiddleware = (req: Request, res: Response, next: Nex
             message: error.msg,
             field: error.param || error.location || "unknown"
         }));
-        res.status(400).json({codeResult: 1, messages: errResult});
+        res.status(400).json({codeResult: 1, errorsMessages: errResult});
     } else {
         next();
     }
@@ -23,8 +23,8 @@ const validateObjectIdMiddleware = (req: Request, res: Response, next: NextFunct
     const { id } = req.params;
 
     if (!objectIdPattern.test(id)) {
-        console.error("Invalid ObjectId format");
-        res.sendStatus(400); // Bad Request
+        // console.error("Invalid ObjectId format");
+        res.sendStatus(400);
         return;
     }
 

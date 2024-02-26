@@ -61,8 +61,8 @@ postsRouter.put('/:id',
             const {title, shortDescription, content, blogId,blogName} = req.body;
             const isUpdated = await postsRepository.updatePost(req.params.id, {title, shortDescription, content, blogId,blogName})
             if (isUpdated) {
-                const blog = await postsRepository.findPostById(req.params.id)
-                res.send(blog)
+                const post = await postsRepository.findPostById(req.params.id)
+                res.status(204).send(post)
                 return
             }
             res.sendStatus(404)

@@ -62,7 +62,7 @@ blogsRouter.put('/:id',
             const isUpdated = await blogsRepository.updateBlog(req.params.id, {name, description, websiteUrl})
             if (isUpdated) {
                 const blog = await blogsRepository.findBlogById(req.params.id)
-                res.send(blog)
+                res.status(204).send(blog)
                 return
             }
             res.sendStatus(404)
