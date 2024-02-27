@@ -8,14 +8,19 @@ import {PostValidation} from "../midlewares/Post-validation";
 
 export const postsRouter = Router({})
 
+// Обработка ошибок
+const handleErrors = (res: Response, error: any) => {
+    console.error("Error:", error);
+    res.status(500).json({error: "Internal Server Error"});
+};
+
 postsRouter.get('/',
     async (req: Request, res: Response) => {
         try {
             const foundPosts: PostViewType[] = await postsRepository.findPost(req.query.title?.toString())
             res.status(200).send(foundPosts)
         } catch (error) {
-            console.error("Error fetching blogs:", error);
-            res.status(500).json({error: "Internal Server Error"});
+            handleErrors(res, error);
         }
     })
 
@@ -31,8 +36,7 @@ postsRouter.get('/:id',
             res.sendStatus(404)
             return
         } catch (error) {
-            console.error("Error fetching blog by ID:", error);
-            res.status(500).json({error: "Internal Server Error"});
+            handleErrors(res, error);
         }
     })
 
@@ -63,8 +67,7 @@ postsRouter.post('/',
             res.status(201).send(newPost)
             return;
         } catch (error) {
-            console.error("Error creating post:", error);
-            res.status(500).json({error: "Internal Server Error"});
+            handleErrors(res, error);
         }
     })
 
@@ -76,37 +79,37 @@ postsRouter.put('/:id',
     async (req: Request, res: Response) => {
         try {
             const {title, shortDescription, content, blogId} = req.body;
-            const isUpdated = await postsRepository.updatePost(req.params.id, {
+            const postId = req.params.id;
+            const isUpdated = await postsRepository.updatePost(postId, {
                 title,
                 shortDescription,
                 content,
                 blogId
             })
+
+            const post = await postsRepository.findPostById(postId)
+
             if (isUpdated) {
-                const post = await postsRepository.findPostById(req.params.id)
                 if (post) {
                     res.status(204).send(post);
-                    return
                 } else {
                     res.status(404).json({error: 'Post not found'});
-                    return
                 }
             } else {
                 res.status(404).json({error: 'Post not found'});
             }
             const errors = [];
             errors.push({message: 'Error blogId', field: 'blogId'})
+
             if (errors.length) {
                 res.status(400).json({
                     errorsMessages: errors
-                })
-                return
+                });
+            } else {
+                res.sendStatus(404);
             }
-            res.sendStatus(404)
-            return
         } catch (error) {
-            console.error("Error updating blog:", error);
-            res.status(500).json({error: "Internal Server Error"});
+            handleErrors(res, error);
         }
     })
 
@@ -124,8 +127,7 @@ postsRouter.delete('/:id',
                 return
             }
         } catch (error) {
-            console.error("Error deleting blog:", error);
-            res.status(500).json({error: "Internal Server Error"});
+            handleErrors(res, error);
         }
     })
 
