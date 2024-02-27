@@ -5,7 +5,7 @@ export type PostInputType = {
     shortDescription: string
     content: string
     blogId: string
-    blogName: string
+    // blogName: string
 }
 
 // с полем id

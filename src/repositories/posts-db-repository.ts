@@ -2,6 +2,7 @@ import {postsCollection} from "../db/db";
 import {PostInputType, PostMongoType, PostViewType} from "../types/PostType";
 import {randomUUID} from "crypto";
 import {ObjectId} from "mongodb";
+import {blogsRepository} from "./blogs-db-repository";
 
 
 export const postsRepository = {
@@ -39,14 +40,15 @@ export const postsRepository = {
         }
     },
 
-    async createPost({title, shortDescription, content, blogId, blogName}: PostInputType): Promise<PostViewType> {
+    async createPost({title, shortDescription, content, blogId}: PostInputType): Promise<PostViewType> {
+        const blogById = await blogsRepository.findBlogById(blogId)
         const newPost: PostMongoType = {
             _id: new ObjectId(),
             title: title,
             shortDescription: shortDescription,
             content: content,
             blogId: blogId,
-            blogName: blogName
+            blogName: blogById!.name
         }
         const result = await postsCollection.insertOne(newPost)
         return {
@@ -55,24 +57,19 @@ export const postsRepository = {
             shortDescription: shortDescription,
             content: content,
             blogId: blogId,
-            blogName: blogName
+            blogName: blogById!.name
         }
     },
 
-    async updatePost(id: string, {
-        title,
-        shortDescription,
-        content,
-        blogId,
-        blogName
-    }: PostInputType): Promise<boolean> {
+    async updatePost(id: string, {title, shortDescription, content, blogId}: PostInputType): Promise<boolean> {
+        const blogById = await blogsRepository.findBlogById(blogId)
         const result = await postsCollection.updateOne({_id: new ObjectId(id)}, {
             $set: {
                 title: title,
                 shortDescription: shortDescription,
                 content: content,
                 blogId: blogId,
-                blogName: blogName
+                blogName: blogById!.name
             }
         })
         return result.matchedCount === 1

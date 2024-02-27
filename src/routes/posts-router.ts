@@ -42,8 +42,8 @@ postsRouter.post('/',
     inputValidationMiddleware,
     async (req: Request, res: Response) => {
         try {
-            const {title, shortDescription, content, blogId,blogName} = req.body;
-            const newBlog: PostInputType = await postsRepository.createPost({title, shortDescription, content, blogId,blogName})
+            const {title, shortDescription, content, blogId} = req.body;
+            const newBlog: PostInputType = await postsRepository.createPost({title, shortDescription, content, blogId})
             res.status(201).send(newBlog)
         } catch (error) {
             console.error("Error creating blog:", error);
@@ -58,8 +58,8 @@ postsRouter.put('/:id',
     inputValidationMiddleware,
     async (req: Request, res: Response) => {
         try {
-            const {title, shortDescription, content, blogId,blogName} = req.body;
-            const isUpdated = await postsRepository.updatePost(req.params.id, {title, shortDescription, content, blogId,blogName})
+            const {title, shortDescription, content, blogId} = req.body;
+            const isUpdated = await postsRepository.updatePost(req.params.id, {title, shortDescription, content, blogId})
             if (isUpdated) {
                 const post = await postsRepository.findPostById(req.params.id)
                 res.status(204).send(post)
