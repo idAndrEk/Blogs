@@ -43,10 +43,16 @@ postsRouter.post('/',
     async (req: Request, res: Response) => {
         try {
             const {title, shortDescription, content, blogId} = req.body;
-            const newPost: PostInputType | null = await postsRepository.createPost({title, shortDescription, content, blogId})
+
+            const newPost: PostInputType | null = await postsRepository.createPost({
+                title,
+                shortDescription,
+                content,
+                blogId
+            })
             if (!newPost) {
                 const errors = [];
-                errors.push({message: 'Error bloggerId', field: 'bloggerId'})
+                errors.push({message: 'Error bloggerId', field: 'blogId'})
                 if (errors.length) {
                     res.status(400).json({
                         errorsMessages: errors
@@ -55,31 +61,7 @@ postsRouter.post('/',
                 }
             }
             res.status(201).send(newPost)
-
-            // const {title, shortDescription, content, blogId} = req.body;
-            //
-            // const newPost: PostInputType | null = await postsRepository.createPost({title, shortDescription, content, blogId})
-            // if (!newPost) {
-            //     const errors = [];
-            //     errors.push({message: 'Error bloggerId', field: 'blogId'})
-            //     if (errors.length) {
-            //         res.status(400).json({
-            //             errorsMessages: errors
-            //         })
-            //         return
-            //     }
-            // }
-            // res.status(201).send(newPost)
-            // const errors = [];
-            // errors.push({ message: 'Error blogId', field: 'blogId' });
-            //
-            // if (!newPost && errors.length) {
-            //     res.status(400).json({
-            //         errorsMessages: errors
-            //     })
-            //     return;
-            // }
-            // res.status(201).send(newPost)
+            return;
         } catch (error) {
             console.error("Error creating post:", error);
             res.status(500).json({error: "Internal Server Error"});
@@ -104,10 +86,13 @@ postsRouter.put('/:id',
                 const post = await postsRepository.findPostById(req.params.id)
                 if (post) {
                     res.status(204).send(post);
+                    return
                 } else {
-                    res.sendStatus(404);
+                    res.status(404).json({error: 'Post not found'});
+                    return
                 }
-                return;
+            } else {
+                res.status(404).json({error: 'Post not found'});
             }
             const errors = [];
             errors.push({message: 'Error blogId', field: 'blogId'})
@@ -132,11 +117,12 @@ postsRouter.delete('/:id',
         try {
             const isDeleted = await postsRepository.deletePost(req.params.id)
             if (isDeleted) {
-                res.sendStatus(204)
+                res.sendStatus(204);
+                return
+            } else {
+                res.status(404).json({error: 'Post not found'});
                 return
             }
-            res.sendStatus(404)
-            return
         } catch (error) {
             console.error("Error deleting blog:", error);
             res.status(500).json({error: "Internal Server Error"});
