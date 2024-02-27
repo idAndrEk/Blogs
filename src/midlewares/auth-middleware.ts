@@ -12,7 +12,6 @@ import {NextFunction, Request, Response} from "express";
 //     res.status(401).send('Authentication required')
 // }
 
-
 export const authBasicMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization
     const base64 = Buffer.from('admin:qwerty').toString('base64');

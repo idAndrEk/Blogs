@@ -6,18 +6,18 @@ export const BlogValidation = [
         .isString()
         .trim()
         .isLength({max: 15, min: 1})
-        .withMessage('Error name'),
+        .withMessage('incorrect name'),
     body('description')
         .notEmpty()
         .isString()
         .trim()
         .isLength({max: 500, min: 1})
-        .withMessage('Error description'),
+        .withMessage('incorrect description'),
     body('websiteUrl')
         .notEmpty()
         .isString()
         .trim()
         .isLength({max: 100, min: 1})
         .matches('^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$')
-        .withMessage('Error youtubeUrl')
+        .withMessage('incorrect websiteUrl')
 ]

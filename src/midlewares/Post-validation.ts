@@ -6,22 +6,22 @@ export const PostValidation = [
         .isString()
         .trim()
         .isLength({max: 30, min: 1})
-        .withMessage('Error title'),
+        .withMessage('incorrect title'),
     body('shortDescription')
         .notEmpty()
         .isString()
         .trim()
         .isLength({max: 100, min: 1})
-        .withMessage('Error shortDescription'),
+        .withMessage('incorrect shortDescription'),
     body('content')
         .notEmpty()
         .isString()
         .trim()
         .isLength({max: 1000, min: 1})
-        .withMessage('Error content'),
+        .withMessage('incorrect content'),
     body('blogId')
         .notEmpty()
         .isString()
         .trim()
-        .withMessage('Error blogId')
+        .withMessage('incorrect blogId')
 ]
