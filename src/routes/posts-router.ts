@@ -50,11 +50,12 @@ postsRouter.post('/',
             const {title, shortDescription, content, blogId} = req.body;
             const blog = await blogsRepository.findBlogById(req.body.blogId);
             if (blog) {
-            const newPost: PostInputType | null = await postsRepository.createPost(blog.name,{
-                title,
-                shortDescription,
-                content, blogId
-            })
+                const blogName = blog.name
+                const newPost: PostInputType | null = await postsRepository.createPost(blogName, {
+                    title,
+                    shortDescription,
+                    content, blogId
+                })
                 if (newPost) {
                     res.status(201).send(newPost)
                 }
