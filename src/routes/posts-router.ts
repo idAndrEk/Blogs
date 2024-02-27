@@ -55,17 +55,24 @@ postsRouter.post('/',
                 blogId
             })
             if (!newPost) {
-                const errors = [];
-                errors.push({message: 'Error bloggerId', field: 'blogId'})
-                if (errors.length) {
-                    res.status(400).json({
-                        errorsMessages: errors
-                    })
-                    return
-                }
+                 res.status(400).json({
+                    errorsMessages: [{ message: 'Error bloggerId', field: 'blogId' }]
+                });
             }
-            res.status(201).send(newPost)
-            return;
+
+             res.status(201).send(newPost);
+            // if (!newPost) {
+            //     const errors = [];
+            //     errors.push({message: 'Error bloggerId', field: 'blogId'})
+            //     if (errors.length) {
+            //         res.status(400).json({
+            //             errorsMessages: errors
+            //         })
+            //         return
+            //     }
+            // }
+            // res.status(201).send(newPost)
+            // return;
         } catch (error) {
             handleErrors(res, error);
         }
