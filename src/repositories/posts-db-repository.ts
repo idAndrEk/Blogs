@@ -62,16 +62,14 @@ export const postsRepository = {
         }
     },
 
-    async updatePost(id: string, {title, shortDescription, content, blogId}: PostInputType): Promise<boolean| null> {
-        const blogById = await blogsRepository.findBlogById(blogId)
-        if (!blogById) return null
+    async updatePost(id: string,blogName:string, {title, shortDescription, content, blogId}: PostInputType): Promise<boolean| null> {
         const result = await postsCollection.updateOne({_id: new ObjectId(id)}, {
             $set: {
                 title: title,
                 shortDescription: shortDescription,
                 content: content,
                 blogId: blogId,
-                blogName: blogById!.name
+                blogName: blogName
             }
         })
         return result.matchedCount === 1
