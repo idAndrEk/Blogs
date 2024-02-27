@@ -56,7 +56,7 @@ postsRouter.post('/',
             // }
             // res.status(201).send(newPost)
             const errors = [];
-            errors.push({ message: 'Error bloggerId', field: 'bloggerId' });
+            errors.push({ message: 'Error blogId', field: 'blogId' });
 
             if (!newPost && errors.length) {
                 res.status(400).json({
@@ -66,7 +66,7 @@ postsRouter.post('/',
             }
             res.status(201).send(newPost)
         } catch (error) {
-            console.error("Error creating blog:", error);
+            console.error("Error creating post:", error);
             res.status(500).json({error: "Internal Server Error"});
         }
     })
@@ -95,7 +95,7 @@ postsRouter.put('/:id',
                 return;
             }
             const errors = [];
-            errors.push({message: 'Error bloggerId', field: 'bloggerId'})
+            errors.push({message: 'Error blogId', field: 'blogId'})
             if (errors.length) {
                 res.status(400).json({
                     errorsMessages: errors
