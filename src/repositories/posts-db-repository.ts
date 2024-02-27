@@ -40,8 +40,9 @@ export const postsRepository = {
         }
     },
 
-    async createPost({title, shortDescription, content, blogId}: PostInputType): Promise<PostViewType> {
+    async createPost({title, shortDescription, content, blogId}: PostInputType): Promise<PostViewType | null> {
         const blogById = await blogsRepository.findBlogById(blogId)
+        if (!blogById) return null
         const newPost: PostMongoType = {
             _id: new ObjectId(),
             title: title,
@@ -61,8 +62,9 @@ export const postsRepository = {
         }
     },
 
-    async updatePost(id: string, {title, shortDescription, content, blogId}: PostInputType): Promise<boolean> {
+    async updatePost(id: string, {title, shortDescription, content, blogId}: PostInputType): Promise<boolean | null> {
         const blogById = await blogsRepository.findBlogById(blogId)
+        if (!blogById) return null
         const result = await postsCollection.updateOne({_id: new ObjectId(id)}, {
             $set: {
                 title: title,

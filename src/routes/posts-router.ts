@@ -43,8 +43,18 @@ postsRouter.post('/',
     async (req: Request, res: Response) => {
         try {
             const {title, shortDescription, content, blogId} = req.body;
-            const newBlog: PostInputType = await postsRepository.createPost({title, shortDescription, content, blogId})
-            res.status(201).send(newBlog)
+            const newPost: PostInputType | null = await postsRepository.createPost({title, shortDescription, content, blogId})
+            if (!newPost) {
+                const errors = [];
+                errors.push({message: 'Error bloggerId', field: 'bloggerId'})
+                if (errors.length) {
+                    res.status(400).json({
+                        errorsMessages: errors
+                    })
+                    return
+                }
+            }
+            res.status(201).send(newPost)
         } catch (error) {
             console.error("Error creating blog:", error);
             res.status(500).json({error: "Internal Server Error"});
@@ -59,10 +69,27 @@ postsRouter.put('/:id',
     async (req: Request, res: Response) => {
         try {
             const {title, shortDescription, content, blogId} = req.body;
-            const isUpdated = await postsRepository.updatePost(req.params.id, {title, shortDescription, content, blogId})
+            const isUpdated = await postsRepository.updatePost(req.params.id, {
+                title,
+                shortDescription,
+                content,
+                blogId
+            })
             if (isUpdated) {
                 const post = await postsRepository.findPostById(req.params.id)
-                res.status(204).send(post)
+                if (post) {
+                    res.status(204).send(post);
+                } else {
+                    res.sendStatus(404);
+                }
+                return;
+            }
+            const errors = [];
+            errors.push({message: 'Error bloggerId', field: 'bloggerId'})
+            if (errors.length) {
+                res.status(400).json({
+                    errorsMessages: errors
+                })
                 return
             }
             res.sendStatus(404)
