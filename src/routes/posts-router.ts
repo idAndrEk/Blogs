@@ -55,12 +55,12 @@ postsRouter.post('/',
                 blogId
             })
             if (!newPost) {
-                 res.status(400).json({
-                    errorsMessages: [{ message: 'Error bloggerId', field: 'blogId' }]
+                res.status(400).json({
+                    errorsMessages: [{message: 'Error bloggerId', field: 'blogId'}]
                 });
             }
 
-             res.status(201).send(newPost);
+            res.status(201).send(newPost);
             // if (!newPost) {
             //     const errors = [];
             //     errors.push({message: 'Error bloggerId', field: 'blogId'})
