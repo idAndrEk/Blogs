@@ -62,7 +62,7 @@ export const postsRepository = {
         }
     },
 
-    async updatePost(id: string, {title, shortDescription, content, blogId}: PostInputType): Promise<boolean | null> {
+    async updatePost(id: string, {title, shortDescription, content, blogId}: PostInputType): Promise<boolean| null> {
         const blogById = await blogsRepository.findBlogById(blogId)
         if (!blogById) return null
         const result = await postsCollection.updateOne({_id: new ObjectId(id)}, {

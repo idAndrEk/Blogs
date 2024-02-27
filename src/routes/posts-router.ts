@@ -55,6 +55,21 @@ postsRouter.post('/',
                 }
             }
             res.status(201).send(newPost)
+
+            // const {title, shortDescription, content, blogId} = req.body;
+            //
+            // const newPost: PostInputType | null = await postsRepository.createPost({title, shortDescription, content, blogId})
+            // if (!newPost) {
+            //     const errors = [];
+            //     errors.push({message: 'Error bloggerId', field: 'blogId'})
+            //     if (errors.length) {
+            //         res.status(400).json({
+            //             errorsMessages: errors
+            //         })
+            //         return
+            //     }
+            // }
+            // res.status(201).send(newPost)
             // const errors = [];
             // errors.push({ message: 'Error blogId', field: 'blogId' });
             //

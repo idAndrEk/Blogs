@@ -3,7 +3,7 @@ import {app} from "../../src";
 import {HTTP_STATUSES} from "../../src/utils";
 
 describe('Posts API', () => {
-    let testPostId: number;
+    let testPostId: string;
     const username = "admin";
     const password = "qwerty";
     const authHeader = `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
