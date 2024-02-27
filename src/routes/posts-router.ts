@@ -44,27 +44,27 @@ postsRouter.post('/',
         try {
             const {title, shortDescription, content, blogId} = req.body;
             const newPost: PostInputType | null = await postsRepository.createPost({title, shortDescription, content, blogId})
-            // if (!newPost) {
-            //     const errors = [];
-            //     errors.push({message: 'Error bloggerId', field: 'bloggerId'})
-            //     if (errors.length) {
-            //         res.status(400).json({
-            //             errorsMessages: errors
-            //         })
-            //         return
-            //     }
-            // }
-            // res.status(201).send(newPost)
-            const errors = [];
-            errors.push({ message: 'Error blogId', field: 'blogId' });
-
-            if (!newPost && errors.length) {
-                res.status(400).json({
-                    errorsMessages: errors
-                })
-                return;
+            if (!newPost) {
+                const errors = [];
+                errors.push({message: 'Error bloggerId', field: 'bloggerId'})
+                if (errors.length) {
+                    res.status(400).json({
+                        errorsMessages: errors
+                    })
+                    return
+                }
             }
             res.status(201).send(newPost)
+            // const errors = [];
+            // errors.push({ message: 'Error blogId', field: 'blogId' });
+            //
+            // if (!newPost && errors.length) {
+            //     res.status(400).json({
+            //         errorsMessages: errors
+            //     })
+            //     return;
+            // }
+            // res.status(201).send(newPost)
         } catch (error) {
             console.error("Error creating post:", error);
             res.status(500).json({error: "Internal Server Error"});
