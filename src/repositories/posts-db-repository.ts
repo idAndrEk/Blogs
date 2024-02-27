@@ -40,14 +40,16 @@ export const postsRepository = {
         }
     },
 
-    async createPost(blogName:string,{title, shortDescription, content,blogId}: PostInputType): Promise<PostViewType | null> {
+    async createPost({title, shortDescription, content, blogId}: PostInputType): Promise<PostViewType | null> {
+        const blogById = await blogsRepository.findBlogById(blogId)
+        if (!blogById) return null
         const newPost: PostMongoType = {
             _id: new ObjectId(),
             title: title,
             shortDescription: shortDescription,
             content: content,
             blogId: blogId,
-            blogName: blogName
+            blogName: blogById!.name
         }
         const result = await postsCollection.insertOne(newPost)
         return {
@@ -56,18 +58,20 @@ export const postsRepository = {
             shortDescription: shortDescription,
             content: content,
             blogId: blogId,
-            blogName: blogName
+            blogName: blogById!.name
         }
     },
 
-    async updatePost(id: string,blogName:string, {title, shortDescription, content, blogId}: PostInputType): Promise<boolean| null> {
+    async updatePost(id: string, {title, shortDescription, content, blogId}: PostInputType): Promise<boolean| null> {
+        const blogById = await blogsRepository.findBlogById(blogId)
+        if (!blogById) return null
         const result = await postsCollection.updateOne({_id: new ObjectId(id)}, {
             $set: {
                 title: title,
                 shortDescription: shortDescription,
                 content: content,
                 blogId: blogId,
-                blogName: blogName
+                blogName: blogById!.name
             }
         })
         return result.matchedCount === 1
