@@ -48,13 +48,19 @@ postsRouter.post('/',
     async (req: Request, res: Response) => {
         try {
             const {title, shortDescription, content, blogId} = req.body;
-
+            const blog = await blogsRepository.findBlogById(req.body.blogId);
+            if (blog) {
             const newPost: PostInputType | null = await postsRepository.createPost({
                 title,
                 shortDescription,
                 content,
                 blogId
             })
+                if (newPost) {
+                    res.status(201).send(newPost)
+                }
+                res.sendStatus(404)
+            }
             // if (!newPost) {
             //     res.status(400).json({
             //         errorsMessages: [{message: 'Error bloggerId', field: 'blogId'}]
@@ -62,18 +68,25 @@ postsRouter.post('/',
             // }
             //
             // res.status(201).send(newPost);
-            if (!newPost) {
-                const errors = [];
-                errors.push({message: 'Error bloggerId', field: 'blogId'})
-                if (errors.length) {
-                    res.status(400).json({
-                        errorsMessages: errors
-                    })
-                    return
-                }
+            // if (!newPost) {
+            //     const errors = [];
+            //     errors.push({message: 'Error bloggerId', field: 'blogId'})
+            //     if (errors.length) {
+            //         res.status(400).json({
+            //             errorsMessages: errors
+            //         })
+            //         return
+            //     }
+            // }
+            // res.status(201).send(newPost)
+            const errors = [];
+            errors.push({message: 'Error bloggerId', field: 'bloggerId'})
+            if (errors.length) {
+                res.status(400).json({
+                    errorsMessages: errors
+                })
             }
-            res.status(201).send(newPost)
-            return;
+            return
         } catch (error) {
             handleErrors(res, error);
         }
@@ -86,7 +99,6 @@ postsRouter.put('/:id',
     inputValidationMiddleware,
     async (req: Request, res: Response) => {
         try {
-
             const blog = await blogsRepository.findBlogById(req.body.bloggerId);
             if (blog) {
                 const {title, shortDescription, content, blogId} = req.body;
