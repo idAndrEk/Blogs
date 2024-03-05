@@ -104,7 +104,7 @@ postsRouter.put('/:id',
                         errorsMessages: errors
                     });
                 } else {
-                    res.sendStatus(404);
+                    res.sendStatus(400);
                 }
             }
         } catch (error) {
