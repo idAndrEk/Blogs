@@ -5,7 +5,7 @@ export const PostValidation = [
         .notEmpty()
         .isString()
         .trim()
-        .isLength({max: 30, min: 1})
+        .isLength({max: 30, min: 1}) //30
         .withMessage('incorrect title'),
     body('shortDescription')
         .notEmpty()
@@ -19,9 +19,4 @@ export const PostValidation = [
         .trim()
         .isLength({max: 1000, min: 1})
         .withMessage('incorrect content'),
-    body('blogId')
-        .notEmpty()
-        .isString()
-        .trim()
-        .withMessage('incorrect blogId')
 ]

@@ -4,6 +4,7 @@ import {authBasicMiddleware} from "../midlewares/auth-middleware";
 import {postsRepository} from "../repositories/posts-db-repository";
 import {PostInputType, PostViewType} from "../types/PostType";
 import {PostValidation} from "../midlewares/Post-validation";
+import {blogsRepository} from "../repositories/blogs-db-repository";
 
 
 export const postsRouter = Router({})
@@ -78,35 +79,76 @@ postsRouter.put('/:id',
     inputValidationMiddleware,
     async (req: Request, res: Response) => {
         try {
-            const {title, shortDescription, content, blogId} = req.body;
             const postId = req.params.id;
-            const isUpdated = await postsRepository.updatePost(postId, {
-                title,
-                shortDescription,
-                content,
-                blogId
-            })
+            const post = await postsRepository.findPostById(postId);
 
-            if (isUpdated) {
-                const post = await postsRepository.findPostById(postId);
-
-                if (post) {
-                    res.status(204).send(post);
-                } else {
-                    res.status(404).json({error: 'Post not found'});
-                }
-            } else {
-                const errors = [];
-                errors.push({message: 'Error blogId', field: 'blogId'});
-
-                if (errors.length) {
-                    res.status(400).json({
-                        errorsMessages: errors
-                    });
-                } else {
-                    res.sendStatus(404);
-                }
+            if (!post) {
+                res.status(404).json({error: 'Post not found'});
             }
+
+            const {title, shortDescription, content, blogId} = req.body;
+            const blogById = await blogsRepository.findBlogById(blogId);
+
+            if (blogById) {
+                const isUpdated = await postsRepository.updatePost(postId, blogById?.name, {
+                    title,
+                    shortDescription,
+                    content,
+                    blogId
+                });
+                if (isUpdated) {
+                    res.sendStatus(204)
+                    return
+                }
+                res.sendStatus(404)
+                return
+            }
+            const errors = [];
+            errors.push({message: 'Error blogId', field: 'blogId'})
+            if (errors.length) {
+                res.status(400).json({
+                    errorsMessages: errors
+                })
+            }
+
+            // if (!blogById) {
+            //     res.status(400).json({errorsMessages: [{message: 'Error blogId', field: 'blogId'}]});
+            //     return;
+            // }
+            // const isUpdated = await postsRepository.updatePost(postId, blogById?.name, {title, shortDescription, content, blogId});
+            // if (isUpdated) {
+            //     res.status(204).send(post);
+            // } else {
+            //     res.status(500).json({error: 'Internal Server Error'});
+            // }
+            // const {title, shortDescription, content, blogId} = req.body;
+            // const postId = req.params.id;
+            // const isUpdated = await postsRepository.updatePost(postId, {
+            //     title,
+            //     shortDescription,
+            //     content,
+            //     blogId
+            // })
+            //
+            // if (isUpdated) {
+            //     const post = await postsRepository.findPostById(postId);
+            //
+            //     if (post) {
+            //         res.status(204).send(post);
+            //     } else {
+            //         res.status(404).json({error: 'Post not found'});
+            //     }
+            // } else {
+            //     const errors = [];
+            //     errors.push({message: 'Error blogId', field: 'blogId'});
+            //
+            //     if (errors.length) {
+            //         res.status(400).json({
+            //             errorsMessages: errors
+            //         });
+            //     } else {
+            //         res.sendStatus(404);
+            //     }
         } catch (error) {
             handleErrors(res, error);
         }
