@@ -56,7 +56,7 @@ postsRouter.post('/',
             })
             if (!newPost) {
                 const errors = [];
-                errors.push({message: 'Error bloggerId', field: 'blogId'})
+                errors.push({message: 'Error blogId', field: 'blogId'})
                 if (errors.length) {
                     res.status(400).json({
                         errorsMessages: errors
@@ -87,26 +87,25 @@ postsRouter.put('/:id',
                 blogId
             })
 
-            const post = await postsRepository.findPostById(postId)
-
             if (isUpdated) {
+                const post = await postsRepository.findPostById(postId);
+
                 if (post) {
                     res.status(204).send(post);
                 } else {
                     res.status(404).json({error: 'Post not found'});
                 }
             } else {
-                res.status(404).json({error: 'Post not found'});
-            }
-            const errors = [];
-            errors.push({message: 'Error blogId', field: 'blogId'})
+                const errors = [];
+                errors.push({message: 'Error blogId', field: 'blogId'});
 
-            if (errors.length) {
-                res.status(400).json({
-                    errorsMessages: errors
-                });
-            } else {
-                res.sendStatus(404);
+                if (errors.length) {
+                    res.status(400).json({
+                        errorsMessages: errors
+                    });
+                } else {
+                    res.sendStatus(404);
+                }
             }
         } catch (error) {
             handleErrors(res, error);

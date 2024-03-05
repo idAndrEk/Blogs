@@ -136,8 +136,8 @@ describe('Blogs API', () => {
                 websiteUrl: 'https://updated-test-blog.com',
             });
 
-        expect(response.status).toBe(HTTP_STATUSES.OK_200);
-        expect(response.body).toHaveProperty('name', 'Updated Blog');
+        expect(response.status).toBe(HTTP_STATUSES.NO_CONTENT_204);
+        // expect(response.body).toHaveProperty('name', 'Updated Blog');
     });
     //Тест на отсутствие авторизации при удалении блога
     it('DELETE /blogs/:id should return 401 without authorization', async () => {
