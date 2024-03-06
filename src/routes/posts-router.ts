@@ -32,10 +32,10 @@ postsRouter.get('/:id',
             let post = await postsRepository.findPostById(req.params.id)
             if (post) {
                 res.status(200).send(post)
-
+                return
             }
             res.sendStatus(404)
-
+            return
         } catch (error) {
             handleErrors(res, error);
         }
@@ -50,11 +50,7 @@ postsRouter.post('/',
             const {title, shortDescription, content, blogId} = req.body;
             const blogById = await blogsRepository.findBlogById(blogId);
             if (!blogById || !blogById.id) {
-                const errors = [];
-                errors.push({message: 'Error blogId', field: 'blogId'});
-                res.status(400).json({
-                    errorsMessages: errors
-                });
+                res.sendStatus(400)
                 return;
             }
             const newPost: PostInputType | null = await postsRepository.createPost(blogById?.id, blogById?.name, {
@@ -101,15 +97,7 @@ postsRouter.put('/:id',
                 res.sendStatus(404)
                 return
             }
-            const errors = [];
-            errors.push({message: 'Error blogId', field: 'blogId'})
-            if (errors.length) {
-                res.status(400).json({
-                    errorsMessages: errors
-                })
-            }
-
-            // if (!blogById) {
+                // if (!blogById) {
             //     res.status(400).json({errorsMessages: [{message: 'Error blogId', field: 'blogId'}]});
             //     return;
             // }

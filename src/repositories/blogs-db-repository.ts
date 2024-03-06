@@ -71,7 +71,6 @@ export const blogsRepository = {
 
     async findBlogValidationById(id: string): Promise<boolean> {
         const blog: BlogMongoType | null = await blogsCollection.findOne({_id: new ObjectId(id)});
-        console.log(blog)
         return !!blog;
     },
 }
