@@ -5,7 +5,7 @@ export const BlogValidation = [
         .notEmpty()
         .isString()
         .trim()
-        .isLength({max: 15, min: 1})
+        .isLength({max: 1, min: 1}) //15
         .withMessage('incorrect name'),
     body('description')
         .notEmpty()
