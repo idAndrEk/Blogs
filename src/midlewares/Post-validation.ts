@@ -5,13 +5,13 @@ export const PostValidation = [
         .notEmpty()
         .isString()
         .trim()
-        .isLength({max: 30, min: 1}) //30
+        .isLength({max: 1, min: 1}) //30
         .withMessage('incorrect title'),
     body('shortDescription')
         .notEmpty()
         .isString()
         .trim()
-        .isLength({max: 100, min: 1})
+        .isLength({max: 1, min: 1})//100
         .withMessage('incorrect shortDescription'),
     body('content')
         .notEmpty()

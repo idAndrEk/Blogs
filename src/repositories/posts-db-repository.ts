@@ -40,16 +40,17 @@ export const postsRepository = {
         }
     },
 
-    async createPost({title, shortDescription, content, blogId}: PostInputType): Promise<PostViewType | null> {
-        const blogById = await blogsRepository.findBlogById(blogId)
-        if (!blogById) return null
+    async createPost(id: string, blogName: string, postInput: PostInputType): Promise<PostViewType | null> {
+        const { title, shortDescription, content } = postInput;
+        // const blogById = await blogsRepository.findBlogById(blogId)
+        // if (!blogById) return null
         const newPost: PostMongoType = {
             _id: new ObjectId(),
             title: title,
             shortDescription: shortDescription,
             content: content,
-            blogId: blogId,
-            blogName: blogById!.name
+            blogId: id,
+            blogName: blogName
         }
         const result = await postsCollection.insertOne(newPost)
         return {
@@ -57,8 +58,8 @@ export const postsRepository = {
             title: title,
             shortDescription: shortDescription,
             content: content,
-            blogId: blogId,
-            blogName: blogById!.name
+            blogId: id,
+            blogName: blogName
         }
     },
 

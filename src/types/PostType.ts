@@ -4,7 +4,7 @@ export type PostInputType = {
     title: string
     shortDescription: string
     content: string
-    blogId: string
+    blogId: string,
 }
 
 // с полем id
