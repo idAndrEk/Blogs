@@ -9,14 +9,20 @@ import {log} from "util";
 
 export const blogsRouter = Router({})
 
+// Обработка ошибок
+const handleErrors = (res: Response, error: any) => {
+    console.error("Error:", error);
+    res.status(500).json({error: "Internal Server Error"});
+};
+
 blogsRouter.get('/',
     async (req: Request, res: Response) => {
         try {
             const foundBlogs: BlogViewType[] = await blogsRepository.findBlog(req.query.name?.toString())
             res.status(200).send(foundBlogs)
         } catch (error) {
-            console.error("Error fetching blogs:", error);
-            res.status(500).json({error: "Internal Server Error"});
+            handleErrors(res, error);
+            return
         }
     })
 
@@ -32,8 +38,8 @@ blogsRouter.get('/:id',
             res.sendStatus(404)
             return
         } catch (error) {
-            console.error("Error fetching blog by ID:", error);
-            res.status(500).json({error: "Internal Server Error"});
+            handleErrors(res, error);
+            return
         }
     })
 
@@ -47,8 +53,8 @@ blogsRouter.post('/',
             const newBlog: BlogInputType = await blogsRepository.createBlog({name, description, websiteUrl})
             res.status(201).send(newBlog)
         } catch (error) {
-            console.error("Error creating blog:", error);
-            res.status(500).json({error: "Internal Server Error"});
+            handleErrors(res, error);
+            return
         }
     })
 
@@ -69,8 +75,8 @@ blogsRouter.put('/:id',
             res.sendStatus(404)
             return
         } catch (error) {
-            console.error("Error updating blog:", error);
-            res.status(500).json({error: "Internal Server Error"});
+            handleErrors(res, error);
+            return
         }
     })
 
@@ -87,8 +93,8 @@ blogsRouter.delete('/:id',
             res.sendStatus(404)
             return
         } catch (error) {
-            console.error("Error deleting blog:", error);
-            res.status(500).json({error: "Internal Server Error"});
+            handleErrors(res, error);
+            return
         }
     })
 

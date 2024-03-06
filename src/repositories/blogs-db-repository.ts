@@ -8,49 +8,49 @@ export const blogsRepository = {
         const filter: any = {}
         if (name) {
             filter.name = {$regex: name}
-            // console.log('Filter:', filter);
         }
         const filteredBlogs: BlogMongoType[] = await blogsCollection.find(filter).toArray();
 
-        const blogsWithId: BlogViewType[] = filteredBlogs.map(blog => ({
+        const blogsWithId = filteredBlogs.map(blog => ({
             id: blog._id.toString(),
             name: blog.name,
             description: blog.description,
             websiteUrl: blog.websiteUrl,
+            createdAt: blog.createdAt,
+            isMembership: blog.isMembership,
         }));
-
         return blogsWithId;
     },
 
     async findBlogById(id: string): Promise<BlogViewType | null> {
         const blog: BlogMongoType | null = await blogsCollection.findOne({_id: new ObjectId(id)});
-
         if (blog) {
             return {
                 id: blog._id.toString(),
                 name: blog.name,
                 description: blog.description,
                 websiteUrl: blog.websiteUrl,
+                createdAt: blog.createdAt,
+                isMembership: blog.isMembership,
             };
         } else {
             return null;
         }
     },
 
-    async createBlog({name, description, websiteUrl}: BlogInputType): Promise<BlogViewType> {
+    async createBlog(blogInput: BlogInputType): Promise<BlogViewType> {
         const newBlog: BlogMongoType = {
             _id: new ObjectId(),
-            name: name,
-            description: description,
-            websiteUrl: websiteUrl
+            ...blogInput,
+            createdAt: new Date(),
+            isMembership: false,
         }
         const result = await blogsCollection.insertOne(newBlog)
+        const {_id, ...blogData} = newBlog;
         return {
             id: result.insertedId.toString(),
-            name: name,
-            description: description,
-            websiteUrl: websiteUrl
-        }
+            ...blogData,
+        };
     },
 
     async updateBlog(id: string, {name, description, websiteUrl}: BlogInputType): Promise<boolean> {

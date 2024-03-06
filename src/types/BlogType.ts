@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import {ObjectId} from "mongodb";
 
 export type BlogInputType = {
     name: string;
@@ -12,6 +12,8 @@ export type BlogMongoType = {
     name: string;
     description: string;
     websiteUrl: string;
+    createdAt: Date;
+    isMembership: boolean;
 };
 
 // с полем id
@@ -20,4 +22,6 @@ export type BlogViewType = {
     name: string;
     description: string;
     websiteUrl: string;
+    createdAt: Date;
+    isMembership: boolean;
 };

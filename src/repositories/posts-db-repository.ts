@@ -19,7 +19,8 @@ export const postsRepository = {
             shortDescription: post.shortDescription,
             content: post.content,
             blogId: post.blogId,
-            blogName: post.blogName
+            blogName: post.blogName,
+            createdAt: post.createdAt,
         }))
         return postsWithId
     },
@@ -33,7 +34,8 @@ export const postsRepository = {
                 shortDescription: post.shortDescription,
                 content: post.content,
                 blogId: post.blogId,
-                blogName: post.blogName
+                blogName: post.blogName,
+                createdAt: post.createdAt,
             }
         } else {
             return null
@@ -41,28 +43,28 @@ export const postsRepository = {
     },
 
     async createPost(id: string, blogName: string, postInput: PostInputType): Promise<PostViewType | null> {
-        const { title, shortDescription, content } = postInput;
+        // const {title, shortDescription, content} = postInput;
         const newPost: PostMongoType = {
             _id: new ObjectId(),
-            title: title,
-            shortDescription: shortDescription,
-            content: content,
+            ...postInput,
             blogId: id,
-            blogName: blogName
+            blogName: blogName,
+            createdAt: new Date(),
         }
         const result = await postsCollection.insertOne(newPost)
+        const {_id, ...postData} = newPost;
         return {
             id: result.insertedId.toString(),
-            title: title,
-            shortDescription: shortDescription,
-            content: content,
-            blogId: id,
-            blogName: blogName
-        }
+            ...postData
+        };
     },
 
-    async updatePost(id: string, blogName:string,{title, shortDescription, content, blogId}: PostInputType): Promise<boolean| null> {
-        // const blogById = await blogsRepository.findBlogById(blogId)
+    async updatePost(id: string, blogName: string, {
+        title,
+        shortDescription,
+        content,
+        blogId
+    }: PostInputType): Promise<boolean | null> {
         const result = await postsCollection.updateOne({_id: new ObjectId(id)}, {
             $set: {
                 title: title,
