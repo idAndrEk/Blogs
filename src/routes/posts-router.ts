@@ -26,7 +26,7 @@ postsRouter.get('/',
     })
 
 postsRouter.get('/:id',
-    validateObjectIdMiddleware,
+    // validateObjectIdMiddleware,
     async (req: Request, res: Response) => {
         try {
             let post = await postsRepository.findPostById(req.params.id)

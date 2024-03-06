@@ -36,17 +36,6 @@ export const inputValidationMiddleware = (req: Request, res: Response, next: Nex
 
 // export const inputValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {
 //     const errors = validationResult(req);
-//     if (!errors.isEmpty()) {
-//         const errResult = errors.array({onlyFirstError: true}).map((error => {
-//             return  {message: error.msg, field: error.param}
-//         }))
-//         return res.status(400).json({errorsMessages: errResult});
-//     }
-//     next()
-// }
-
-// export const inputValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {
-//     const errors = validationResult(req);
 //
 //     if (!errors.isEmpty()) {
 //         const errResult = errors.mapped();
