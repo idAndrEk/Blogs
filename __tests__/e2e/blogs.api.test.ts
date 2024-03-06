@@ -25,7 +25,7 @@ describe('Blogs API', () => {
         testBlogId = response.body.id;
     });
 
-// Тест для получения всех блогов
+// Тест на получения всех блогов
     it('GET /blogs should return a list of blogs', async () => {
         const response = await request(app).get('/blogs');
         expect(response.status).toEqual(HTTP_STATUSES.OK_200);
@@ -38,7 +38,7 @@ describe('Blogs API', () => {
         expect(response.status).toBe(HTTP_STATUSES.BAD_REQUEST_400);
     });
 
-    // Тест для получения блога по существующему формату ID, но несуществующему ID
+    // Тест на получения блога по существующему формату ID, но несуществующему ID
     it('GET /blogs/:id should return 404 for non-existent blog with valid format', async () => {
         const nonExistentBlogId = '60b6ff471d8a5d001f5f1581'; // Предполагаемый несуществующий ID блога
 
@@ -47,7 +47,7 @@ describe('Blogs API', () => {
         expect(response.status).toBe(HTTP_STATUSES.NOT_FOUND_404);
     });
 
-// Тест для получения блога по ID
+// Тест на получения блога по ID
     it('GET /blogs/:id should return a specific blog', async () => {
         const response = await request(app).get(`/blogs/${testBlogId}`);
         expect(response.status).toBe(HTTP_STATUSES.OK_200);
@@ -81,7 +81,7 @@ describe('Blogs API', () => {
         expect(response.status).toBe(HTTP_STATUSES.BAD_REQUEST_400);
     });
 
-    // Тест для создания нового блога
+    // Тест на создания нового блога
     it('POST /blogs should create a new blog', async () => {
         const response = await request(app)
             .post('/blogs')
@@ -125,7 +125,7 @@ describe('Blogs API', () => {
         expect(response.status).toBe(HTTP_STATUSES.BAD_REQUEST_400);
     });
 
-    // Тест для обновления блога
+    // Тест на обновления блога
     it('PUT /blogs/:id should update a specific blog', async () => {
         const response = await request(app)
             .put(`/blogs/${testBlogId}`)
@@ -139,6 +139,7 @@ describe('Blogs API', () => {
         expect(response.status).toBe(HTTP_STATUSES.NO_CONTENT_204);
         // expect(response.body).toHaveProperty('name', 'Updated Blog');
     });
+
     //Тест на отсутствие авторизации при удалении блога
     it('DELETE /blogs/:id should return 401 without authorization', async () => {
         const response = await request(app).delete(`/blogs/${testBlogId}`);
@@ -154,7 +155,7 @@ describe('Blogs API', () => {
         expect(response.status).toBe(HTTP_STATUSES.BAD_REQUEST_400);
     });
 
-    // Тест для удаления блога
+    // Тест на удаления блога
     it('DELETE /blogs/:id should delete a specific blog', async () => {
         const response = await request(app)
             .delete(`/blogs/${testBlogId}`)

@@ -67,5 +67,11 @@ export const blogsRepository = {
     async deleteBlog(id: string): Promise<boolean> {
         const result = await blogsCollection.deleteOne({_id: new ObjectId(id)})
         return result.deletedCount === 1
-    }
+    },
+
+    async findBlogValidationById(id: string): Promise<boolean> {
+        const blog: BlogMongoType | null = await blogsCollection.findOne({_id: new ObjectId(id)});
+        console.log(blog)
+        return !!blog;
+    },
 }

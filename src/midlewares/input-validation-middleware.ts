@@ -25,7 +25,7 @@ export const inputValidationMiddleware = (req: Request, res: Response, next: Nex
             message: error.msg,
             field: error.path
         }));
-        console.log("inputValidationMiddleware", errResult)
+        // console.log("inputValidationMiddleware", errResult)
         // console.log(`Error on the field ${formattedErrors[0].field}`);
         res.status(400).json({errorsMessages: errResult});
     } else {
