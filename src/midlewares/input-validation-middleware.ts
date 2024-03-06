@@ -18,8 +18,10 @@ export default validateObjectIdMiddleware;
 
 export const inputValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
+
     if (!errors.isEmpty()) {
-        const errResult = errors.array({onlyFirstError: true}).map((error) => ({
+        const errResult = errors.array().map((error) => ({
+        // const errResult = errors.array({onlyFirstError: true}).map((error) => ({
             message: error.msg,
             field: error.path
         }));

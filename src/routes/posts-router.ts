@@ -52,7 +52,7 @@ postsRouter.post('/',
             if (!blogById || !blogById.id) {
                 const errors = [];
                 errors.push({message: 'Error blogId', field: 'blogId'});
-                res.status(404).json({
+                res.status(400).json({
                     errorsMessages: errors
                 });
                 return;
@@ -104,10 +104,11 @@ postsRouter.put('/:id',
             const errors = [];
             errors.push({message: 'Error blogId', field: 'blogId'})
             if (errors.length) {
-                res.status(404).json({
+                res.status(400).json({
                     errorsMessages: errors
                 })
             }
+
             // if (!blogById) {
             //     res.status(400).json({errorsMessages: [{message: 'Error blogId', field: 'blogId'}]});
             //     return;

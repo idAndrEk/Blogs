@@ -42,8 +42,6 @@ export const postsRepository = {
 
     async createPost(id: string, blogName: string, postInput: PostInputType): Promise<PostViewType | null> {
         const { title, shortDescription, content } = postInput;
-        // const blogById = await blogsRepository.findBlogById(blogId)
-        // if (!blogById) return null
         const newPost: PostMongoType = {
             _id: new ObjectId(),
             title: title,
