@@ -52,8 +52,7 @@ postsRouter.post('/',
             if (!blogById || !blogById.id) {
                 const errors = [];
                 errors.push({message: 'Error blogId', field: 'blogId'});
-
-                res.status(400).json({
+                res.status(404).json({
                     errorsMessages: errors
                 });
                 return;
@@ -83,14 +82,11 @@ postsRouter.put('/:id',
         try {
             const postId = req.params.id;
             const post = await postsRepository.findPostById(postId);
-
             if (!post) {
                 res.status(404).json({error: 'Post not found'});
             }
-
             const {title, shortDescription, content, blogId} = req.body;
             const blogById = await blogsRepository.findBlogById(blogId);
-
             if (blogById) {
                 const isUpdated = await postsRepository.updatePost(postId, blogById?.name, {
                     title,
@@ -108,11 +104,10 @@ postsRouter.put('/:id',
             const errors = [];
             errors.push({message: 'Error blogId', field: 'blogId'})
             if (errors.length) {
-                res.status(400).json({
+                res.status(404).json({
                     errorsMessages: errors
                 })
             }
-
             // if (!blogById) {
             //     res.status(400).json({errorsMessages: [{message: 'Error blogId', field: 'blogId'}]});
             //     return;
