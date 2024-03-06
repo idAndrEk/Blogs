@@ -22,6 +22,7 @@ postsRouter.get('/',
             res.status(200).send(foundPosts)
         } catch (error) {
             handleErrors(res, error);
+            return
         }
     })
 
@@ -38,6 +39,7 @@ postsRouter.get('/:id',
             return
         } catch (error) {
             handleErrors(res, error);
+            return
         }
     })
 
@@ -66,6 +68,7 @@ postsRouter.post('/',
             }
         } catch (error) {
             handleErrors(res, error);
+            return
         }
     })
 
@@ -80,6 +83,7 @@ postsRouter.put('/:id',
             const post = await postsRepository.findPostById(postId);
             if (!post) {
                 res.status(404).json({error: 'Post not found'});
+                return
             }
             const {title, shortDescription, content, blogId} = req.body;
             const blogById = await blogsRepository.findBlogById(blogId);
@@ -137,6 +141,7 @@ postsRouter.put('/:id',
             //     }
         } catch (error) {
             handleErrors(res, error);
+            return
         }
     })
 
@@ -155,6 +160,7 @@ postsRouter.delete('/:id',
             }
         } catch (error) {
             handleErrors(res, error);
+            return
         }
     })
 
