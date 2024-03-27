@@ -1,17 +1,34 @@
 import {BlogListResponse, BlogMongoType, BlogViewType} from "../../types/BlogType";
 import {blogsCollection} from "../../db/db";
 import {ObjectId} from "mongodb";
+import {SortDirection} from "../../types/paginationType";
 
 export const BlogsQueryRepository = {
-    async findBlog(page: number, pageSize: number, name: string | null): Promise<BlogListResponse[]> {
+    async findBlog(page: number, pageSize: number, name: string | null, sortBy: string, sortDirection: string): Promise<BlogListResponse[]> {
+        // Инициализируем фильтр для запроса
         const filter: any = {}
+        // Если задано имя, добавляем его в фильтр
         if (name) {
             filter.name = {$regex: name}
         }
+        // Вычисляем количество документов, которые нужно пропустить (для пагинации)
         const skip = (page - 1) * pageSize
+        // Вычисляем количество документов в коллекции, соответствующих фильтру
         const total = await blogsCollection.countDocuments(filter)
+        // Вычисляем общее количество страниц
         const totalPages = Math.ceil(total / pageSize);
-        let filteredBlogs = await blogsCollection.find(filter).skip(skip).limit(pageSize).toArray()
+        // Инициализируем объект для сортировки
+        const sortQuery: any = {};
+        // Если задано поле для сортировки, добавляем его в объект сортировки
+        if (sortBy) {
+            sortQuery[sortBy] = sortDirection === SortDirection.Asc ? 1 : -1;
+        }
+        // Выполняем запрос к коллекции с использованием фильтра, сортировки и ограничения по количеству результатов
+        let filteredBlogs = await blogsCollection.find(filter)
+            .skip(skip)
+            .sort(sortQuery)
+            .limit(pageSize)
+            .toArray()
 
         const blogsListResponse: BlogListResponse = {
             pagesCount: totalPages,
@@ -27,18 +44,7 @@ export const BlogsQueryRepository = {
                 isMembership: b.isMembership,
             })),
         };
-
         return [blogsListResponse];
-
-        // filteredBlogs.map(blog => ({
-        // id: blog._id.toString(),
-        // name: blog.name,
-        // description: blog.description,
-        // websiteUrl: blog.websiteUrl,
-        // createdAt: blog.createdAt,
-        // isMembership: blog.isMembership,
-        // }));
-        // return blogsWithId;
     },
 
     async findBlogById(id: string): Promise<BlogViewType | null> {

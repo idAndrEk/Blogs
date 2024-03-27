@@ -8,6 +8,7 @@ import {BlogsQueryRepository} from "../repositories/blogs/blogsQueryRepository";
 import {PostInputType} from "../types/PostType";
 import {postsService} from "../domain/posts-service";
 import {PostValidation} from "../midlewares/Post-validation";
+import {SortBy, SortDirection} from "../types/paginationType";
 
 
 export const blogsRouter = Router({})
@@ -24,7 +25,9 @@ blogsRouter.get('/',
             const parsedPageNumber = req.query.pageNumber || 1;
             const parsedPageSize = req.query.pageSize || 10;
             const searchNameTerm = req.query.searchNameTerm || '';
-            const getAllBlogs: BlogListResponse[] = await BlogsQueryRepository.findBlog(+parsedPageNumber, +parsedPageSize, searchNameTerm.toString())
+            const sortBy: SortBy = req.query.sortBy as SortBy || SortBy.CreatedAt;
+            const sortDirection: SortDirection = req.query.sortDirection === 'asc' ? SortDirection.Asc : SortDirection.Desc;
+            const getAllBlogs: BlogListResponse[] = await BlogsQueryRepository.findBlog(+parsedPageNumber, +parsedPageSize, searchNameTerm.toString(), sortBy.toString(), sortDirection)
             res.status(200).send(getAllBlogs)
         } catch (error) {
             handleErrors(res, error);
