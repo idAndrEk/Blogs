@@ -6,22 +6,24 @@ export type BlogInputType = {
     websiteUrl: string;
 };
 
+export type BlogListResponse = {
+    pagesCount: number;
+    page: number;
+    pageSize: number;
+    totalCount: number;
+    items: BlogViewType[];
+};
+
 // с полем _id
-export type BlogMongoType = {
+export type BlogMongoType = BlogInputType & {
     _id: ObjectId;
-    name: string;
-    description: string;
-    websiteUrl: string;
     createdAt: Date;
     isMembership: boolean;
 };
 
 // с полем id
-export type BlogViewType = {
+export type BlogViewType = BlogInputType & {
     id?: string;
-    name: string;
-    description: string;
-    websiteUrl: string;
     createdAt: Date;
     isMembership: boolean;
 };

@@ -7,6 +7,14 @@ export type PostInputType = {
     blogId: string;
 }
 
+export type PostListResponse = {
+    pagesCount: number;
+    page: number;
+    pageSize: number;
+    totalCount: number;
+    items: PostViewType[];
+};
+
 // с полем id
 export type PostViewType = {
     id?: string;
@@ -28,4 +36,6 @@ export type PostMongoType = {
     blogName: string;
     createdAt: Date;
 }
+
+
 

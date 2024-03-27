@@ -1,5 +1,6 @@
 import {body} from "express-validator";
-import {blogsRepository} from "../repositories/blogs-db-repository";
+import {blogsRepository} from "../repositories/blogs/blogs-repository";
+import {BlogsQueryRepository} from "../repositories/blogs/blogsQueryRepository";
 
 export const PostValidation = [
     body('title')
@@ -22,7 +23,7 @@ export const PostValidation = [
         .withMessage('incorrect content'),
     body('blogId')
         .custom(async (blogId) => {
-            const blogById = await blogsRepository.findBlogValidationById(blogId);
+            const blogById = await BlogsQueryRepository.findBlogValidationById(blogId);
             if (!blogById) {
                 throw new Error('incorrect blogId');
             }

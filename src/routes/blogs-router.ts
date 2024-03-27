@@ -1,10 +1,13 @@
 import {Request, Response, Router} from "express";
-import {blogsRepository} from "../repositories/blogs-db-repository";
 import validateObjectIdMiddleware, {inputValidationMiddleware} from "../midlewares/input-validation-middleware";
 import {authBasicMiddleware} from "../midlewares/auth-middleware";
-import {BlogInputType, BlogViewType} from "../types/BlogType";
+import {BlogInputType, BlogListResponse, BlogViewType} from "../types/BlogType";
 import {BlogValidation} from "../midlewares/Blog-validation";
-import {log} from "util";
+import {blogsService} from "../domain/blogs-service";
+import {BlogsQueryRepository} from "../repositories/blogs/blogsQueryRepository";
+import {PostInputType} from "../types/PostType";
+import {postsService} from "../domain/posts-service";
+import {PostValidation} from "../midlewares/Post-validation";
 
 
 export const blogsRouter = Router({})
@@ -18,8 +21,11 @@ const handleErrors = (res: Response, error: any) => {
 blogsRouter.get('/',
     async (req: Request, res: Response) => {
         try {
-            const foundBlogs: BlogViewType[] = await blogsRepository.findBlog(req.query.name?.toString())
-            res.status(200).send(foundBlogs)
+            const parsedPageNumber = req.query.pageNumber || 1;
+            const parsedPageSize = req.query.pageSize || 10;
+            const searchNameTerm = req.query.searchNameTerm || '';
+            const getAllBlogs: BlogListResponse[] = await BlogsQueryRepository.findBlog(+parsedPageNumber, +parsedPageSize, searchNameTerm.toString())
+            res.status(200).send(getAllBlogs)
         } catch (error) {
             handleErrors(res, error);
             return
@@ -30,9 +36,9 @@ blogsRouter.get('/:id',
     validateObjectIdMiddleware,
     async (req: Request, res: Response) => {
         try {
-            let blog = await blogsRepository.findBlogById(req.params.id)
-            if (blog) {
-                res.send(blog)
+            let getBlogById = await BlogsQueryRepository.findBlogById(req.params.id)
+            if (getBlogById) {
+                res.send(getBlogById)
                 return
             }
             res.sendStatus(404)
@@ -50,7 +56,7 @@ blogsRouter.post('/',
     async (req: Request, res: Response) => {
         try {
             const {name, description, websiteUrl} = req.body;
-            const newBlog: BlogInputType = await blogsRepository.createBlog({name, description, websiteUrl})
+            const newBlog: BlogInputType = await blogsService.createBlog({name, description, websiteUrl})
             res.status(201).send(newBlog)
         } catch (error) {
             handleErrors(res, error);
@@ -66,9 +72,9 @@ blogsRouter.put('/:id',
     async (req: Request, res: Response) => {
         try {
             const {name, description, websiteUrl} = req.body;
-            const isUpdated = await blogsRepository.updateBlog(req.params.id, {name, description, websiteUrl})
-            if (isUpdated) {
-                const blog = await blogsRepository.findBlogById(req.params.id)
+            const updateBlogById = await blogsService.updateBlog(req.params.id, {name, description, websiteUrl})
+            if (updateBlogById) {
+                const blog = await BlogsQueryRepository.findBlogById(req.params.id)
                 res.status(204).send(blog)
                 return
             }
@@ -85,8 +91,8 @@ blogsRouter.delete('/:id',
     authBasicMiddleware,
     async (req: Request, res: Response) => {
         try {
-            const isDeleted = await blogsRepository.deleteBlog(req.params.id)
-            if (isDeleted) {
+            const deleteBlogById = await blogsService.deleteBlog(req.params.id)
+            if (deleteBlogById) {
                 res.sendStatus(204)
                 return
             }
@@ -98,3 +104,32 @@ blogsRouter.delete('/:id',
         }
     })
 
+blogsRouter.post('/:id/posts',
+    authBasicMiddleware,
+    PostValidation,
+    inputValidationMiddleware,
+    async (req: Request, res: Response) => {
+        try {
+            const {title, shortDescription, content} = req.body;
+            const blogId = req.params.id
+            const blogById = await BlogsQueryRepository.findBlogById(blogId)
+            if (!blogById || !blogById.id) {
+                res.sendStatus(400)
+                return;
+            }
+            const newPost: PostInputType | null = await postsService.createPost(blogById?.id, blogById?.name, {
+                title,
+                shortDescription,
+                content,
+                blogId
+            });
+            if (newPost) {
+                res.status(201).send(newPost);
+            } else {
+                res.sendStatus(404);
+            }
+        } catch (error) {
+            handleErrors(res, error);
+            return
+        }
+    })

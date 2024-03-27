@@ -1,10 +1,11 @@
 import {Request, Response, Router} from "express";
 import validateObjectIdMiddleware, {inputValidationMiddleware} from "../midlewares/input-validation-middleware";
 import {authBasicMiddleware} from "../midlewares/auth-middleware";
-import {postsRepository} from "../repositories/posts-db-repository";
-import {PostInputType, PostViewType} from "../types/PostType";
+import {PostInputType, PostListResponse, PostViewType} from "../types/PostType";
 import {PostValidation} from "../midlewares/Post-validation";
-import {blogsRepository} from "../repositories/blogs-db-repository";
+import {BlogsQueryRepository} from "../repositories/blogs/blogsQueryRepository";
+import {postsService} from "../domain/posts-service";
+import {PostsQueryRepository} from "../repositories/posts/postsQueryRepository";
 
 
 export const postsRouter = Router({})
@@ -18,7 +19,10 @@ const handleErrors = (res: Response, error: any) => {
 postsRouter.get('/',
     async (req: Request, res: Response) => {
         try {
-            const foundPosts: PostViewType[] = await postsRepository.findPost(req.query.title?.toString())
+            const parsedPageNumber = req.query.pageNumber || 1;
+            const parsedPageSize = req.query.pageSize || 10;
+            const queryTitle = req.query.title?.toString()
+            const foundPosts: PostListResponse[] = await PostsQueryRepository.findPost(+parsedPageNumber, +parsedPageSize, queryTitle)
             res.status(200).send(foundPosts)
         } catch (error) {
             handleErrors(res, error);
@@ -30,7 +34,7 @@ postsRouter.get('/:id',
     validateObjectIdMiddleware,
     async (req: Request, res: Response) => {
         try {
-            let post = await postsRepository.findPostById(req.params.id)
+            let post = await PostsQueryRepository.findPostById(req.params.id)
             if (post) {
                 res.status(200).send(post)
                 return
@@ -50,12 +54,12 @@ postsRouter.post('/',
     async (req: Request, res: Response) => {
         try {
             const {title, shortDescription, content, blogId} = req.body;
-            const blogById = await blogsRepository.findBlogById(blogId);
+            const blogById = await BlogsQueryRepository.findBlogById(blogId);
             if (!blogById || !blogById.id) {
                 res.sendStatus(400)
                 return;
             }
-            const newPost: PostInputType | null = await postsRepository.createPost(blogById?.id, blogById?.name, {
+            const newPost: PostInputType | null = await postsService.createPost(blogById?.id, blogById?.name, {
                 title,
                 shortDescription,
                 content,
@@ -80,15 +84,15 @@ postsRouter.put('/:id',
     async (req: Request, res: Response) => {
         try {
             const postId = req.params.id;
-            const post = await postsRepository.findPostById(postId);
+            const post = await PostsQueryRepository.findPostById(postId);
             if (!post) {
                 res.status(404).json({error: 'Post not found'});
                 return
             }
             const {title, shortDescription, content, blogId} = req.body;
-            const blogById = await blogsRepository.findBlogById(blogId);
+            const blogById = await BlogsQueryRepository.findBlogById(blogId);
             if (blogById) {
-                const isUpdated = await postsRepository.updatePost(postId, blogById?.name, {
+                const isUpdated = await postsService.updatePost(postId, blogById?.name, {
                     title,
                     shortDescription,
                     content,
@@ -101,44 +105,6 @@ postsRouter.put('/:id',
                 res.sendStatus(404)
                 return
             }
-                // if (!blogById) {
-            //     res.status(400).json({errorsMessages: [{message: 'Error blogId', field: 'blogId'}]});
-            //     return;
-            // }
-            // const isUpdated = await postsRepository.updatePost(postId, blogById?.name, {title, shortDescription, content, blogId});
-            // if (isUpdated) {
-            //     res.status(204).send(post);
-            // } else {
-            //     res.status(500).json({error: 'Internal Server Error'});
-            // }
-            // const {title, shortDescription, content, blogId} = req.body;
-            // const postId = req.params.id;
-            // const isUpdated = await postsRepository.updatePost(postId, {
-            //     title,
-            //     shortDescription,
-            //     content,
-            //     blogId
-            // })
-            //
-            // if (isUpdated) {
-            //     const post = await postsRepository.findPostById(postId);
-            //
-            //     if (post) {
-            //         res.status(204).send(post);
-            //     } else {
-            //         res.status(404).json({error: 'Post not found'});
-            //     }
-            // } else {
-            //     const errors = [];
-            //     errors.push({message: 'Error blogId', field: 'blogId'});
-            //
-            //     if (errors.length) {
-            //         res.status(400).json({
-            //             errorsMessages: errors
-            //         });
-            //     } else {
-            //         res.sendStatus(404);
-            //     }
         } catch (error) {
             handleErrors(res, error);
             return
@@ -150,7 +116,7 @@ postsRouter.delete('/:id',
     authBasicMiddleware,
     async (req: Request, res: Response) => {
         try {
-            const isDeleted = await postsRepository.deletePost(req.params.id)
+            const isDeleted = await postsService.deletePost(req.params.id)
             if (isDeleted) {
                 res.sendStatus(204);
                 return
