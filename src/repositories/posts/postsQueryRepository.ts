@@ -1,9 +1,10 @@
 import {PostListResponse, PostMongoType, PostViewType} from "../../types/PostType";
 import {blogsCollection, postsCollection} from "../../db/db";
 import {ObjectId} from "mongodb";
+import {SortDirection} from "../../types/paginationType";
 
 export const PostsQueryRepository = {
-    async findPost(page: number, pageSize: number, title: string | null | undefined): Promise<PostListResponse[]> {
+    async findPost(page: number, pageSize: number, title: string | null | undefined, sortBy: string, sortDirection: string): Promise<PostListResponse[]> {
         const filter: any = {}
         if (title) {
             filter.name = {$regex: title}
@@ -11,7 +12,16 @@ export const PostsQueryRepository = {
         const skip = (page - 1) * pageSize
         const total = await postsCollection.countDocuments(filter)
         const totalPages = Math.ceil(total / pageSize);
-        const filteredPosts: PostMongoType[] = await postsCollection.find(filter).skip(skip).limit(pageSize).toArray()
+        const sortQuery: any = {};
+        if (sortBy) {
+            sortQuery[sortBy] = sortDirection === SortDirection.Asc ? 1 : -1;
+        }
+        const filteredPosts: PostMongoType[] = await postsCollection
+            .find(filter)
+            .skip(skip)
+            .sort(sortQuery)
+            .limit(pageSize)
+            .toArray()
 
         const postsListResponse: PostListResponse = {
             pagesCount: totalPages,

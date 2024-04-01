@@ -6,6 +6,7 @@ import {PostValidation} from "../midlewares/Post-validation";
 import {BlogsQueryRepository} from "../repositories/blogs/blogsQueryRepository";
 import {postsService} from "../domain/posts-service";
 import {PostsQueryRepository} from "../repositories/posts/postsQueryRepository";
+import {SortBy, SortDirection} from "../types/paginationType";
 
 
 export const postsRouter = Router({})
@@ -22,7 +23,9 @@ postsRouter.get('/',
             const parsedPageNumber = req.query.pageNumber || 1;
             const parsedPageSize = req.query.pageSize || 10;
             const queryTitle = req.query.title?.toString()
-            const foundPosts: PostListResponse[] = await PostsQueryRepository.findPost(+parsedPageNumber, +parsedPageSize, queryTitle)
+            const sortBy: SortBy = req.query.sortBy as SortBy || SortBy.CreatedAt;
+            const sortDirection: SortDirection = req.query.sortDirection === 'asc' ? SortDirection.Asc : SortDirection.Desc;
+            const foundPosts: PostListResponse[] = await PostsQueryRepository.findPost(+parsedPageNumber, +parsedPageSize, queryTitle,sortBy.toString(), sortDirection)
             res.status(200).send(foundPosts)
         } catch (error) {
             handleErrors(res, error);
