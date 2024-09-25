@@ -23,7 +23,7 @@ export const inputValidationMiddleware = (req: Request, res: Response, next: Nex
         // const errResult = errors.array().map((error) => ({
         const errResult = errors.array({onlyFirstError: true}).map((error) => ({
             message: error.msg,
-            field: error.path
+            field: (error as any).param
         }));
         // console.log("inputValidationMiddleware", errResult)
         // console.log(`Error on the field ${formattedErrors[0].field}`);
