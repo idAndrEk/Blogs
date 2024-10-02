@@ -9,6 +9,7 @@ import {PostInputType} from "../types/PostType";
 import {postsService} from "../domain/posts-service";
 import {PostValidation} from "../midlewares/Post-validation";
 import {SortBy, SortDirection} from "../types/paginationType";
+import {PostsQueryRepository} from "../repositories/posts/postsQueryRepository";
 
 
 export const blogsRouter = Router({})
@@ -107,6 +108,31 @@ blogsRouter.delete('/:id',
         }
     })
 
+blogsRouter.get('/:id/posts',
+    validateObjectIdMiddleware,
+    authBasicMiddleware,
+    async (req: Request, res: Response) => {
+        try {
+            const parsedPageNumber = req.query.pageNumber || 1;
+            const parsedPageSize = req.query.pageSize || 10;
+            const sortBy: SortBy = req.query.sortBy as SortBy || SortBy.CreatedAt;
+            const sortDirection: SortDirection = req.query.sortDirection === 'asc' ? SortDirection.Asc : SortDirection.Desc;
+            let blogById = await BlogsQueryRepository.findBlogById(req.params.id)
+            if (!blogById) {
+                res.sendStatus(404)
+                return
+            }
+            const postsByBlogId = await PostsQueryRepository.findPostBlogById(blogById.id as string, +parsedPageNumber, +parsedPageSize, sortBy, sortDirection)
+            if (postsByBlogId) {
+                res.send(postsByBlogId)
+                return
+            }
+        } catch (error) {
+            handleErrors(res, error);
+            return
+        }
+    })
+
 blogsRouter.post('/:id/posts',
     authBasicMiddleware,
     PostValidation,
@@ -120,14 +146,14 @@ blogsRouter.post('/:id/posts',
                 res.sendStatus(404)
                 return;
             }
-            const newPost: PostInputType | null = await postsService.createPost(blogById?.id, blogById?.name, {
+            const createPostBlogger: PostInputType | null = await postsService.createPost(blogById?.id, blogById?.name, {
                 title,
                 shortDescription,
                 content,
                 blogId
             });
-            if (newPost) {
-                res.status(201).send(newPost);
+            if (createPostBlogger) {
+                res.status(201).send(createPostBlogger);
             } else {
                 res.sendStatus(404);
             }
@@ -136,3 +162,4 @@ blogsRouter.post('/:id/posts',
             return
         }
     })
+
