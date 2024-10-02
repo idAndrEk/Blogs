@@ -21,7 +21,7 @@ export const PostValidation = [
         .isLength({max: 1000, min: 1})
         .withMessage('incorrect content'),
     body('blogId')
-        .custom(async (_, { req }) => {
+        .custom(async (_, { req }) => { //игнорируем значение blogId из тела запроса
             const blogId = req.params?.id
             console.log(blogId)
             const blogById = await BlogsQueryRepository.findBlogValidationById(blogId);
