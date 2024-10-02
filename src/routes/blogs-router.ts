@@ -113,6 +113,7 @@ blogsRouter.post('/:id/posts',
     inputValidationMiddleware,
     async (req: Request, res: Response) => {
         try {
+            console.log(req.params.id)
             const {title, shortDescription, content} = req.body;
             const blogId = req.params.id
             const blogById = await BlogsQueryRepository.findBlogById(blogId)
