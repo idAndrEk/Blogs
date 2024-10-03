@@ -1,5 +1,5 @@
-import {NextFunction, Request, Response} from "express";
-import {validationResult} from "express-validator";
+import { Request, Response, NextFunction } from 'express';
+import { validationResult, ValidationError } from 'express-validator';
 
 const validateObjectIdMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const objectIdPattern = /^[0-9a-fA-F]{24}$/;
@@ -20,18 +20,33 @@ export const inputValidationMiddleware = (req: Request, res: Response, next: Nex
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        // const errResult = errors.array().map((error) => ({
-        const errResult = errors.array({onlyFirstError: true}).map((error) => ({
-            message: error.msg,
-            field: (error as any).param
-        }));
-        // console.log("inputValidationMiddleware", errResult)
-        // console.log(`Error on the field ${formattedErrors[0].field}`);
-        res.status(404).json({errorsMessages: errResult});
-    } else {
-        next();
+        return res.status(400).send({
+            errorsMessages: errors.array({ onlyFirstError: true }).map((e: ValidationError) => ({
+                message: e.msg,
+                field: e.path
+            }))
+        });
     }
+    return next();
 };
+
+
+
+
+
+// if (!errors.isEmpty()) {
+//     // const errResult = errors.array().map((error) => ({
+//     const errResult = errors.array({onlyFirstError: true}).map((error) => ({
+//         message: error.msg,
+//         field:error.param
+//     }));
+//     // console.log("inputValidationMiddleware", errResult)
+//     // console.log(`Error on the field ${formattedErrors[0].field}`);
+//     res.status(400).json({errorsMessages: errResult});
+// } else {
+//     next();
+// }
+// };
 
 
 // export const inputValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {

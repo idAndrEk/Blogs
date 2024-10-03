@@ -4,12 +4,12 @@ import {ObjectId} from "mongodb";
 import {SortDirection} from "../../types/paginationType";
 
 export const BlogsQueryRepository = {
-    async findBlog(page: number, pageSize: number, name: string | null, sortBy: string, sortDirection: string): Promise<BlogListResponse[]> {
+    async findBlog(page: number, pageSize: number, name: string | null, sortBy: string, sortDirection: string): Promise<BlogListResponse> {
         // Инициализируем фильтр для запроса
         const filter: any = {}
         // Если задано имя, добавляем его в фильтр
         if (name) {
-            filter.name = {$regex: name}
+            filter.name = { $regex: name, $options: 'i' } //$options: 'i' для игнорирования регистра
         }
         // Вычисляем количество документов, которые нужно пропустить (для пагинации)
         const skip = (page - 1) * pageSize
@@ -44,7 +44,7 @@ export const BlogsQueryRepository = {
                 isMembership: b.isMembership,
             })),
         };
-        return [blogsListResponse];
+        return blogsListResponse;
     },
 
     async findBlogById(id: string): Promise<BlogViewType | null> {

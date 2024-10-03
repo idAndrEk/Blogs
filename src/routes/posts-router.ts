@@ -25,7 +25,7 @@ postsRouter.get('/',
             const queryTitle = req.query.title?.toString()
             const sortBy: SortBy = req.query.sortBy as SortBy || SortBy.CreatedAt;
             const sortDirection: SortDirection = req.query.sortDirection === 'asc' ? SortDirection.Asc : SortDirection.Desc;
-            const foundPosts: PostListResponse[] = await PostsQueryRepository.findPost(+parsedPageNumber, +parsedPageSize, queryTitle,sortBy.toString(), sortDirection)
+            const foundPosts: PostListResponse = await PostsQueryRepository.findPost(+parsedPageNumber, +parsedPageSize, queryTitle,sortBy.toString(), sortDirection)
             res.status(200).send(foundPosts)
         } catch (error) {
             handleErrors(res, error);

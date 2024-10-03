@@ -28,8 +28,14 @@ blogsRouter.get('/',
             const searchNameTerm = req.query.searchNameTerm || '';
             const sortBy: SortBy = req.query.sortBy as SortBy || SortBy.CreatedAt;
             const sortDirection: SortDirection = req.query.sortDirection === 'asc' ? SortDirection.Asc : SortDirection.Desc;
-            const getAllBlogs: BlogListResponse[] = await BlogsQueryRepository.findBlog(+parsedPageNumber, +parsedPageSize, searchNameTerm.toString(), sortBy.toString(), sortDirection)
-            res.status(200).send(getAllBlogs)
+            const blogsListResponse: BlogListResponse = await BlogsQueryRepository.findBlog(
+                +parsedPageNumber,
+                +parsedPageSize,
+                searchNameTerm.toString(),
+                sortBy.toString(),
+                sortDirection
+            );
+            res.status(200).send(blogsListResponse)
         } catch (error) {
             handleErrors(res, error);
             return
