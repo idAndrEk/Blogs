@@ -15,7 +15,6 @@ const validateObjectIdMiddleware = (req: Request, res: Response, next: NextFunct
 
 export default validateObjectIdMiddleware;
 
-
 export const inputValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
 
@@ -23,14 +22,12 @@ export const inputValidationMiddleware = (req: Request, res: Response, next: Nex
         return res.status(400).send({
             errorsMessages: errors.array({ onlyFirstError: true }).map((e: ValidationError) => ({
                 message: e.msg,
-                // field: e.path
+                field: (e as any).path
             }))
         });
     }
     return next();
 };
-
-
 
 
 
