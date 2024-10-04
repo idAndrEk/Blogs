@@ -21,11 +21,20 @@ export const PostValidation = [
         .isLength({max: 1000, min: 1})
         .withMessage('incorrect content'),
     body('blogId')
-        .custom(async (_, { req }) => { //игнорируем значение blogId из тела запроса
-            const blogId = req.params?.id
+        .custom(async (blogId, { req }) => {
             const blogById = await BlogsQueryRepository.findBlogValidationById(blogId);
             if (!blogById) {
                 throw new Error('incorrect blogId');
             }
-        }),
+        })
+        .withMessage('incorrect blogId')
+
+    // body('blogId')
+    //     .custom(async (_, { req }) => { //игнорируем значение blogId из тела запроса
+    //         const blogId = req.params?.id
+    //         const blogById = await BlogsQueryRepository.findBlogValidationById(blogId);
+    //         if (!blogById) {
+    //             throw new Error('incorrect blogId');
+    //         }
+    //     }),
 ]
