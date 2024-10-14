@@ -140,6 +140,7 @@ blogsRouter.get('/:id/posts',
     })
 
 blogsRouter.post('/:id/posts',
+    validateObjectIdMiddleware,
     authBasicMiddleware,
     PostValidation,
     inputValidationMiddleware,
