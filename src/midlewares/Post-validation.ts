@@ -20,14 +20,15 @@ export const PostValidation = [
         .trim()
         .isLength({max: 1000, min: 1})
         .withMessage('incorrect content'),
-    body('blogId')
-        .custom(async (blogId, { req }) => {
-            const blogById = await BlogsQueryRepository.findBlogValidationById(blogId);
-            if (!blogById) {
-                throw new Error('incorrect blogId');
-            }
-        })
-        .withMessage('incorrect blogId')
+    // body('blogId')
+    //     .custom(async (blogId) => {
+    //         const blogById = await BlogsQueryRepository.findBlogValidationById(blogId);
+    //         console.log(blogById)
+    //         if (!blogById) {
+    //             throw new Error('incorrect blogId');
+    //         }
+    //     })
+    //     .withMessage('incorrect blogId')
 
     // body('blogId')
     //     .custom(async (_, { req }) => { //игнорируем значение blogId из тела запроса
