@@ -25,7 +25,7 @@ postsRouter.get('/',
             const queryTitle = req.query.title?.toString()
             const sortBy: SortBy = req.query.sortBy as SortBy || SortBy.CreatedAt;
             const sortDirection: SortDirection = req.query.sortDirection === 'asc' ? SortDirection.Asc : SortDirection.Desc;
-            const foundPosts: PostListResponse = await PostsQueryRepository.findPost(+parsedPageNumber, +parsedPageSize, queryTitle,sortBy.toString(), sortDirection)
+            const foundPosts: PostListResponse = await PostsQueryRepository.findPost(+parsedPageNumber, +parsedPageSize, queryTitle, sortBy.toString(), sortDirection)
             res.status(200).send(foundPosts)
         } catch (error) {
             handleErrors(res, error);
@@ -62,16 +62,16 @@ postsRouter.post('/',
                 res.sendStatus(400)
                 return;
             }
-            const newPost: PostInputType | null = await postsService.createPost(blogById?.id, blogById?.name, {
+                        const newPost: PostInputType | null = await postsService.createPost(blogById?.id, blogById?.name, {
                 title,
                 shortDescription,
                 content,
                 blogId
             });
             if (newPost) {
-                res.status(201).send(newPost);
+                return res.status(201).send(newPost);
             } else {
-                res.sendStatus(404);
+                return  res.sendStatus(404);
             }
         } catch (error) {
             handleErrors(res, error);
@@ -102,15 +102,15 @@ postsRouter.put('/:id',
                     blogId
                 });
                 if (isUpdated) {
-                    res.sendStatus(204)
-                    return
+                    return  res.sendStatus(204)
+
                 }
-                res.sendStatus(404)
-                return
+                return res.sendStatus(404)
+
             }
         } catch (error) {
-            handleErrors(res, error);
-            return
+            return handleErrors(res, error)
+
         }
     })
 
