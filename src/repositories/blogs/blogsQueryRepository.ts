@@ -63,8 +63,8 @@ export const BlogsQueryRepository = {
         }
     },
 
-    // async findBlogValidationById(id: string): Promise<boolean> {
-    //     const blog: BlogMongoType | null = await blogsCollection.findOne({_id: new ObjectId(id)});
-    //     return !!blog;
-    // },
+    async findBlogValidationById(id: string): Promise<boolean> {
+        const blog: BlogMongoType | null = await blogsCollection.findOne({_id: new ObjectId(id)});
+        return !!blog;
+    },
 }
