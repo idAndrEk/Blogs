@@ -20,23 +20,11 @@ export const PostValidation = [
         .trim()
         .isLength({max: 1000, min: 1})
         .withMessage('incorrect content'),
-    body('blogId')
-        .notEmpty()
-        .custom(async (blogId) => {
-        const blogExists = await BlogsQueryRepository.findBlogValidationById(blogId);
-        if (!blogExists) {
-            throw new Error('incorrect blogId');
-        }
-    }),
-
     // body('blogId')
-    //     .notEmpty()
-    //     .isString()
     //     .custom(async (blogId) => {
-    //         const blogExists = await BlogsQueryRepository.findBlogValidationById(blogId);
-    //         if (!blogExists) {
-    //             throw new Error('incorrect blogId');
-    //         }
-    //     })
-    //     .withMessage('incorrect blogId'),
+    //     const blogExists = await BlogsQueryRepository.findBlogValidationById(blogId);
+    //     if (!blogExists) {
+    //         throw new Error('incorrect blogId');
+    //     }
+    // }),
 ]
