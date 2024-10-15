@@ -20,6 +20,13 @@ export const PostValidation = [
         .trim()
         .isLength({max: 1000, min: 1})
         .withMessage('incorrect content'),
+    body('blogId').custom(async (blogId) => {
+        const blogExists = await BlogsQueryRepository.findBlogById(blogId);
+        if (!blogExists) {
+            throw new Error('incorrect blogId');
+        }
+    }),
+
     // body('blogId')
     //     .notEmpty()
     //     .isString()
