@@ -19,11 +19,11 @@ export const inputValidationMiddleware = (req: Request, res: Response, next: Nex
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        return res.status(400).send({
-            errorsMessages: errors.array({ onlyFirstError: true }).map((e: ValidationError) => ({
-                message: e.msg,
-                field: (e as any).path
-            }))
+            return res.status(400).send({
+                errorsMessages: errors.array({ onlyFirstError: true }).map((e: ValidationError) => ({
+                    message: e.msg,
+                    field: (e as any).path
+                }))
         });
     }
     return next();
