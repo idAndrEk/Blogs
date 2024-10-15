@@ -116,7 +116,6 @@ blogsRouter.delete('/:id',
 
 blogsRouter.get('/:id/posts',
     validateObjectIdMiddleware,
-    authBasicMiddleware,
     async (req: Request, res: Response) => {
         try {
             const parsedPageNumber = req.query.pageNumber || 1;
