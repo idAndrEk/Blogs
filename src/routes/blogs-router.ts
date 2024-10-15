@@ -10,6 +10,7 @@ import {postsService} from "../domain/posts-service";
 import {PostValidation} from "../midlewares/Post-validation";
 import {SortBy, SortDirection} from "../types/paginationType";
 import {PostsQueryRepository} from "../repositories/posts/postsQueryRepository";
+import {PostBlogsByIdValidation} from "../midlewares/PostBlogsById-validation";
 
 
 export const blogsRouter = Router({})
@@ -141,7 +142,7 @@ blogsRouter.get('/:id/posts',
 blogsRouter.post('/:id/posts',
     validateObjectIdMiddleware,
     authBasicMiddleware,
-    PostValidation,
+    PostBlogsByIdValidation,
     inputValidationMiddleware,
     async (req: Request, res: Response) => {
         try {
