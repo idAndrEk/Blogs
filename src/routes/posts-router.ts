@@ -57,17 +57,18 @@ postsRouter.post('/',
     async (req: Request, res: Response) => {
         try {
             const {title, shortDescription, content, blogId} = req.body;
+
             const errors = [];
             const blogById = await BlogsQueryRepository.findBlogById(blogId);
             if (!blogById || !blogById.id) {
-                errors.push({ message: 'incorrect blogId', field: 'blogId' });
+                errors.push({message: 'incorrect blogId', field: 'blogId'});
             }
-            const newPost: PostInputType | null = await postsService.createPost(blogById?.id as string, blogById?.name as string, {
-                title,
-                shortDescription,
-                content,
-                blogId
-            });
+            const newPost: PostInputType | null = await postsService.createPost(
+                blogById?.id as string,
+                blogById?.name as string,
+                {
+                    title, shortDescription, content, blogId
+                });
             if (newPost) {
                 return res.status(201).send(newPost);
             } else {
