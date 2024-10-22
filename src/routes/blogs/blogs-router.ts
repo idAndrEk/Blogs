@@ -1,21 +1,20 @@
 import {Request, Response, Router} from "express";
-import validateObjectIdMiddleware, {inputValidationMiddleware} from "../midlewares/input-validation-middleware";
-import {authBasicMiddleware} from "../midlewares/auth-middleware";
-import {BlogInputType, BlogListResponse, BlogViewType} from "../types/BlogType";
-import {BlogValidation} from "../midlewares/Blog-validation";
-import {blogsService} from "../domain/blogs-service";
-import {BlogsQueryRepository} from "../repositories/blogs/blogsQueryRepository";
-import {PostInputType} from "../types/PostType";
-import {postsService} from "../domain/posts-service";
-import {PostValidation} from "../midlewares/Post-validation";
-import {SortBy, SortDirection} from "../types/paginationType";
-import {PostsQueryRepository} from "../repositories/posts/postsQueryRepository";
-import {PostBlogsByIdValidation} from "../midlewares/PostBlogsById-validation";
+import {authBasicMiddleware} from "../../midlewares/auth/authMiddleware";
+import {BlogInputType, BlogListResponse} from "../../types/BlogType";
+import {blogsService} from "../../domain/blogs/blogs-service";
+import {BlogsQueryRepository} from "../../repositories/blogs/blogsQueryRepository";
+import {PostInputType} from "../../types/PostType";
+import {postsService} from "../../domain/posts/posts-service";
+import {PostsQueryRepository} from "../../repositories/posts/postsQueryRepository";
+import {inputValidationMiddleware, validateObjectIdMiddleware} from "../../midlewares/input-validation-middleware";
+import {BlogValidation} from "../../validators/blogValidation";
+import {PostValidation} from "../../validators/postValidation";
+import {parseQueryParams} from "../../utils/queryParamsParser";
 
 
 export const blogsRouter = Router({})
 
-// Обработка ошибок
+// errors
 const handleErrors = (res: Response, error: any) => {
     console.error("Error:", error);
     res.status(500).json({error: "Internal Server Error"});
@@ -24,11 +23,8 @@ const handleErrors = (res: Response, error: any) => {
 blogsRouter.get('/',
     async (req: Request, res: Response) => {
         try {
-            const parsedPageNumber = req.query.pageNumber || 1;
-            const parsedPageSize = req.query.pageSize || 10;
+            const {sortBy, sortDirection, parsedPageNumber, parsedPageSize} = parseQueryParams(req)
             const searchNameTerm = req.query.searchNameTerm || '';
-            const sortBy: SortBy = req.query.sortBy as SortBy || SortBy.CreatedAt;
-            const sortDirection: SortDirection = req.query.sortDirection === 'asc' ? SortDirection.Asc : SortDirection.Desc;
             const blogsListResponse: BlogListResponse = await BlogsQueryRepository.findBlog(
                 +parsedPageNumber,
                 +parsedPageSize,
@@ -36,10 +32,9 @@ blogsRouter.get('/',
                 sortBy.toString(),
                 sortDirection
             );
-            res.status(200).send(blogsListResponse)
+            return res.status(200).send(blogsListResponse)
         } catch (error) {
-            handleErrors(res, error);
-            return
+            return handleErrors(res, error);
         }
     })
 
@@ -49,14 +44,11 @@ blogsRouter.get('/:id',
         try {
             let getBlogById = await BlogsQueryRepository.findBlogById(req.params.id)
             if (getBlogById) {
-                res.send(getBlogById)
-                return
+                return res.send(getBlogById)
             }
-            res.sendStatus(404)
-            return
+            return res.sendStatus(404)
         } catch (error) {
-            handleErrors(res, error);
-            return
+            return handleErrors(res, error);
         }
     })
 
@@ -68,10 +60,9 @@ blogsRouter.post('/',
         try {
             const {name, description, websiteUrl} = req.body;
             const newBlog: BlogInputType = await blogsService.createBlog({name, description, websiteUrl})
-            res.status(201).send(newBlog)
+            return res.status(201).send(newBlog)
         } catch (error) {
-            handleErrors(res, error);
-            return
+            return handleErrors(res, error);
         }
     })
 
@@ -86,14 +77,11 @@ blogsRouter.put('/:id',
             const updateBlogById = await blogsService.updateBlog(req.params.id, {name, description, websiteUrl})
             if (updateBlogById) {
                 const blog = await BlogsQueryRepository.findBlogById(req.params.id)
-                res.status(204).send(blog)
-                return
+                return res.status(204).send(blog)
             }
-            res.sendStatus(404)
-            return
+            return res.sendStatus(404)
         } catch (error) {
-            handleErrors(res, error);
-            return
+            return handleErrors(res, error);
         }
     })
 
@@ -104,14 +92,11 @@ blogsRouter.delete('/:id',
         try {
             const deleteBlogById = await blogsService.deleteBlog(req.params.id)
             if (deleteBlogById) {
-                res.sendStatus(204)
-                return
+                return res.sendStatus(204)
             }
-            res.sendStatus(404)
-            return
+            return res.sendStatus(404)
         } catch (error) {
-            handleErrors(res, error);
-            return
+            return handleErrors(res, error);
         }
     })
 
@@ -119,30 +104,30 @@ blogsRouter.get('/:id/posts',
     validateObjectIdMiddleware,
     async (req: Request, res: Response) => {
         try {
-            const parsedPageNumber = req.query.pageNumber || 1;
-            const parsedPageSize = req.query.pageSize || 10;
-            const sortBy: SortBy = req.query.sortBy as SortBy || SortBy.CreatedAt;
-            const sortDirection: SortDirection = req.query.sortDirection === 'asc' ? SortDirection.Asc : SortDirection.Desc;
+            const {sortBy, sortDirection, parsedPageNumber, parsedPageSize} = parseQueryParams(req)
             let blogById = await BlogsQueryRepository.findBlogById(req.params.id)
             if (!blogById) {
-                res.sendStatus(404)
-                return
+                return res.sendStatus(404)
             }
-            const postsByBlogId = await PostsQueryRepository.findPostBlogById(blogById.id as string, +parsedPageNumber, +parsedPageSize, sortBy, sortDirection)
+            const postsByBlogId = await PostsQueryRepository.findPostBlogById(
+                blogById.id as string,
+                +parsedPageNumber,
+                +parsedPageSize,
+                sortBy.toString(),
+                sortDirection)
             if (postsByBlogId) {
-                res.send(postsByBlogId)
-                return
+                return res.send(postsByBlogId)
             }
         } catch (error) {
-            handleErrors(res, error);
-            return
+            return handleErrors(res, error);
         }
     })
 
 blogsRouter.post('/:id/posts',
     validateObjectIdMiddleware,
     authBasicMiddleware,
-    PostBlogsByIdValidation,
+    // PostBlogByIdValidation,
+    PostValidation,
     inputValidationMiddleware,
     async (req: Request, res: Response) => {
         try {
@@ -150,23 +135,21 @@ blogsRouter.post('/:id/posts',
             const blogId = req.params.id
             const blogById = await BlogsQueryRepository.findBlogById(blogId)
             if (!blogById || !blogById.id) {
-                res.sendStatus(404)
-                return;
+                return res.sendStatus(404)
             }
             const createPostBlogger: PostInputType | null = await postsService.createPost(blogById?.id, blogById?.name, {
                 title,
                 shortDescription,
                 content,
                 blogId
-            });
+            })
             if (createPostBlogger) {
                 res.status(201).send(createPostBlogger);
             } else {
                 res.sendStatus(404);
             }
         } catch (error) {
-            handleErrors(res, error);
-            return
+            return handleErrors(res, error);
         }
     })
 

@@ -1,6 +1,7 @@
 import {MongoClient} from "mongodb";
 import {BlogViewType} from "../types/BlogType";
 import {PostViewType} from "../types/PostType";
+import {UserViewType} from "../types/UserType";
 
 require('dotenv').config()
 
@@ -8,10 +9,11 @@ const mongoUri = process.env.MONGO_URL || 'mongodb://0.0.0.0:27017'
 
 const client = new MongoClient(mongoUri)
 
-const db = client.db("Blogs")
+const db = client.db("It-incubator")
 
 export const blogsCollection = db.collection<BlogViewType>("blogs");
 export const postsCollection = db.collection<PostViewType>("posts");
+export const usersCollection = db.collection<UserViewType>("users");
 
 
 export async function runDb() {

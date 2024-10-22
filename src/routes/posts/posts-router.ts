@@ -1,12 +1,12 @@
 import {Request, Response, Router} from "express";
-import validateObjectIdMiddleware, {inputValidationMiddleware} from "../midlewares/input-validation-middleware";
-import {authBasicMiddleware} from "../midlewares/auth-middleware";
-import {PostInputType, PostListResponse, PostViewType} from "../types/PostType";
-import {PostValidation} from "../midlewares/Post-validation";
-import {BlogsQueryRepository} from "../repositories/blogs/blogsQueryRepository";
-import {postsService} from "../domain/posts-service";
-import {PostsQueryRepository} from "../repositories/posts/postsQueryRepository";
-import {SortBy, SortDirection} from "../types/paginationType";
+import {authBasicMiddleware} from "../../midlewares/auth/authMiddleware";
+import {PostInputType, PostListResponse} from "../../types/PostType";
+import {BlogsQueryRepository} from "../../repositories/blogs/blogsQueryRepository";
+import {postsService} from "../../domain/posts/posts-service";
+import {PostsQueryRepository} from "../../repositories/posts/postsQueryRepository";
+import {inputValidationMiddleware, validateObjectIdMiddleware} from "../../midlewares/input-validation-middleware";
+import {PostValidation} from "../../validators/postValidation";
+import {SortDirection} from "../../utils/queryParamsParser";
 
 
 export const postsRouter = Router({})
@@ -23,7 +23,7 @@ postsRouter.get('/',
             const parsedPageNumber = req.query.pageNumber || 1;
             const parsedPageSize = req.query.pageSize || 10;
             const queryTitle = req.query.title?.toString()
-            const sortBy: SortBy = req.query.sortBy as SortBy || SortBy.CreatedAt;
+            const sortBy = req.query.sortBy || 'CreatedAt';
             const sortDirection: SortDirection = req.query.sortDirection === 'asc' ? SortDirection.Asc : SortDirection.Desc;
             const foundPosts: PostListResponse = await PostsQueryRepository.findPost(+parsedPageNumber, +parsedPageSize, queryTitle, sortBy.toString(), sortDirection)
             res.status(200).send(foundPosts)

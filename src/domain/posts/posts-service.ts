@@ -1,7 +1,7 @@
 import {ObjectId} from "mongodb";
-import {PostsQueryRepository} from "../repositories/posts/postsQueryRepository";
-import {postsRepository} from "../repositories/posts/posts-repository";
-import {PostInputType, PostListResponse, PostMongoType, PostViewType} from "../types/PostType";
+import {PostsQueryRepository} from "../../repositories/posts/postsQueryRepository";
+import {postsRepository} from "../../repositories/posts/posts-repository";
+import {PostInputType, PostListResponse, PostMongoType, PostViewType} from "../../types/PostType";
 
 
 export const postsService = {

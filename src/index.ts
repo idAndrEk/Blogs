@@ -1,8 +1,9 @@
 import express from "express";
-import {blogsRouter} from "./routes/blogs-router";
+import {blogsRouter} from "./routes/blogs/blogs-router";
 import {runDb} from "./db/db";
 import {clearDatabaseRouter} from "./routes/clearDatabase-router";
-import {postsRouter} from "./routes/posts-router";
+import {postsRouter} from "./routes/posts/posts-router";
+import {usersRouter} from "./routes/users/userRoutes";
 
 require('dotenv').config()
 
@@ -17,6 +18,7 @@ app.use(express.urlencoded({extended: true}));
 
 app.use('/blogs', blogsRouter)
 app.use('/posts', postsRouter)
+app.use('/users', usersRouter)
 app.use('/testing', clearDatabaseRouter)
 
 const startApp = async () => {
@@ -28,4 +30,3 @@ const startApp = async () => {
 
 startApp()
 
-export default app;//?

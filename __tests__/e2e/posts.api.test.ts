@@ -1,6 +1,6 @@
 import request from 'supertest'
 import {app} from "../../src";
-import {HTTP_STATUSES} from "../../src/utils";
+import {HTTP_STATUSES} from "../../src/utils/utils";
 
 describe('Posts API', () => {
     let testPostId: string;

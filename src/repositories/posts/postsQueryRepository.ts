@@ -1,8 +1,7 @@
 import {PostListResponse, PostMongoType, PostViewType} from "../../types/PostType";
-import {blogsCollection, postsCollection} from "../../db/db";
+import {postsCollection} from "../../db/db";
 import {ObjectId} from "mongodb";
-import {SortDirection} from "../../types/paginationType";
-import {postsRepository} from "./posts-repository";
+import {SortDirection} from "../../utils/queryParamsParser";
 
 export const PostsQueryRepository = {
     async findPost(
@@ -30,7 +29,7 @@ export const PostsQueryRepository = {
             .limit(pageSize)
             .toArray()
 
-        const postsListResponse: PostListResponse = {
+        return {
             pagesCount: totalPages,
             page: page,
             pageSize: pageSize,
@@ -46,7 +45,6 @@ export const PostsQueryRepository = {
                     createdAt: post.createdAt,
                 })),
         }
-        return postsListResponse
     },
 
     async findPostById(id: string): Promise<PostViewType | null> {
@@ -90,7 +88,7 @@ export const PostsQueryRepository = {
             .sort(sortQuery)
             .limit(pageSize)
             .toArray()
-        const postsByBlogsListResponse: PostListResponse = {
+        return {
             pagesCount: totalPages,
             page: page,
             pageSize: pageSize,
@@ -106,6 +104,5 @@ export const PostsQueryRepository = {
                     createdAt: post.createdAt,
                 })),
         }
-        return postsByBlogsListResponse
     }
 }
