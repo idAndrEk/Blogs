@@ -1,9 +1,12 @@
-import {blogsCollection, usersCollection} from "../../db/db";
-import {UserListResponse, UserMongoType} from "../../types/UserType";
+import {usersCollection} from "../../db/db";
+import { UserListResponse, UserMongoType} from "../../types/UserType";
 import {SortDirection} from "../../utils/queryParamsParser";
-import {BlogMongoType} from "../../types/BlogType";
-import {ObjectId} from "mongodb";
 
+
+ interface UserCheckByLogin {
+    login: string;       // Логин для возврата
+    passwordHash: string; // Хэш пароля для проверки
+}
 export const UsersQueryRepository = {
     async findUsers(sortBy: string,
                     sortDirection: string,
@@ -54,6 +57,15 @@ export const UsersQueryRepository = {
     async findUserByEmail(email: string): Promise<boolean> {
         const user = await usersCollection.findOne({email});
         return !!user
-    }
+    },
 
+    async findCheckUserByLogin(login: string): Promise<UserCheckByLogin | null> {
+        const user: UserMongoType | null = await usersCollection.findOne<UserMongoType>({login});
+        console.log(user)
+        if (!user) return null;
+        return {
+            login: user.login,
+            passwordHash: user.password
+        }
+    }
 }

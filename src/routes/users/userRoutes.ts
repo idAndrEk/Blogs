@@ -5,8 +5,9 @@ import {parseQueryParams} from "../../utils/queryParamsParser";
 import {authBasicMiddleware} from "../../midlewares/auth/authMiddleware";
 import {usersService} from "../../domain/users/userService";
 import {UserValidation} from "../../validators/userValidator";
-import { validationResult } from 'express-validator';
-import {inputValidationMiddleware} from "../../midlewares/input-validation-middleware";
+import {validationResult} from 'express-validator';
+import {inputValidationMiddleware, validateObjectIdMiddleware} from "../../midlewares/input-validation-middleware";
+import {blogsService} from "../../domain/blogs/blogs-service";
 
 export const usersRouter = Router({})
 
@@ -52,7 +53,7 @@ usersRouter.post('/',
         try {
             const {login, password, email} = req.body
             // console.log(req.body)
-            const newUser: UserViewType  = await usersService.createUser ({login, password, email})
+            const newUser: UserViewType = await usersService.createUser({login, password, email})
             return res.status(201).send(newUser)
         } catch (error) {
             return handleErrors(res, error);
@@ -61,10 +62,15 @@ usersRouter.post('/',
 
 
 usersRouter.delete('/:id',
-
+    validateObjectIdMiddleware,
+    authBasicMiddleware,
     async (req: Request, res: Response) => {
         try {
-
+            const deleteUserById = await usersService.deleteUser(req.params.id)
+            if (deleteUserById) {
+                return res.sendStatus(204)
+            }
+            return res.sendStatus(404)
         } catch (error) {
             return handleErrors(res, error);
         }

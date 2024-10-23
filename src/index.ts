@@ -4,6 +4,7 @@ import {runDb} from "./db/db";
 import {clearDatabaseRouter} from "./routes/clearDatabase-router";
 import {postsRouter} from "./routes/posts/posts-router";
 import {usersRouter} from "./routes/users/userRoutes";
+import {authRouter} from "./routes/auth/authRoutes";
 
 require('dotenv').config()
 
@@ -20,6 +21,7 @@ app.use('/blogs', blogsRouter)
 app.use('/posts', postsRouter)
 app.use('/users', usersRouter)
 app.use('/testing', clearDatabaseRouter)
+app.use('/auth', authRouter)
 
 const startApp = async () => {
     await runDb()

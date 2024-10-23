@@ -14,6 +14,7 @@
     "@types/express-validator": "^3.0.0",
     "@types/jest": "^29.5.11",
     "@types/supertest": "^6.0.2",
+    "bcrypt": "^5.1.1",
     "express": "^4.21.0",
     "express-validation": "^4.1.1",
     "express-validator": "^7.2.0",

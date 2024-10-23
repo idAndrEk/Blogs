@@ -4,9 +4,7 @@ import { validationResult, ValidationError } from 'express-validator'
 export const validateObjectIdMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const objectIdPattern = /^[0-9a-fA-F]{24}$/
     const {id} = req.params
-
     if (!objectIdPattern.test(id)) {
-        // console.error("Invalid ObjectId format");
         res.sendStatus(400)
         return
     }
