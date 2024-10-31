@@ -100,6 +100,7 @@ blogsRouter.delete('/:id',
         }
     })
 
+//posts
 blogsRouter.get('/:id/posts',
     validateObjectIdMiddleware,
     async (req: Request, res: Response) => {

@@ -1,26 +1,29 @@
 import {usersCollection} from "../../db/db";
-import { UserListResponse, UserMongoType} from "../../types/UserType";
+import {UserCheckByLogin, UserListResponse, UserMongoType} from "../../types/UserType";
 import {SortDirection} from "../../utils/queryParamsParser";
 
 
- interface UserCheckByLogin {
-    login: string;       // Логин для возврата
-    passwordHash: string; // Хэш пароля для проверки
-}
+
 export const UsersQueryRepository = {
     async findUsers(sortBy: string,
                     sortDirection: string,
                     page: number,
                     pageSize: number,
                     login: string,
-                    email: string): Promise<UserListResponse> {
+                    email: string
+    ): Promise<UserListResponse> {
         const filter: any = {}
+        const orConditions: any[] = [];
         if (login) {
-            filter.login = {$regex: login, $options: 'i'}
+            orConditions.push({ login: { $regex: login, $options: 'i' } })
         }
         if (email) {
-            filter.email = {$regex: email, $options: 'i'}
+            orConditions.push({ email: { $regex: email, $options: 'i' } })
         }
+        if (orConditions.length > 0) {
+            filter.$or = orConditions
+        }
+        // console.log('Filter:', filter);
         const skip = (page - 1) * pageSize
         const total = await usersCollection.countDocuments(filter)
         const totalPages = Math.ceil(total / pageSize);
@@ -33,7 +36,7 @@ export const UsersQueryRepository = {
             .sort(sortQuery)
             .limit(pageSize)
             .toArray()
-
+        // console.log('filteredUsers: ',filteredUsers)
         return {
             pagesCount: totalPages,
             page: page,
@@ -49,8 +52,9 @@ export const UsersQueryRepository = {
     },
 
     async findUserByLogin(login: string): Promise<boolean> {
-        console.log('findUserByLogin: ', login)
+        // console.log('findUserByLogin: ', login)
         const user = await usersCollection.findOne({login});
+        console.log(user)
         return !!user
     },
 
@@ -60,12 +64,13 @@ export const UsersQueryRepository = {
     },
 
     async findCheckUserByLogin(login: string): Promise<UserCheckByLogin | null> {
-        const user: UserMongoType | null = await usersCollection.findOne<UserMongoType>({login});
-        console.log(user)
+        const user = await usersCollection.findOne<UserMongoType>({login});
         if (!user) return null;
         return {
             login: user.login,
-            passwordHash: user.password
+            email: user.email,
+            passwordHash: user.password,
+            id: user._id
         }
     }
 }

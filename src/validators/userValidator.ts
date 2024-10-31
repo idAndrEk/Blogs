@@ -10,7 +10,6 @@ export const UserValidation = [
         .matches(/^[a-zA-Z0-9_-]*$/)
         .custom(async (login) => {
             const userExists = await UsersQueryRepository.findUserByLogin(login);
-            console.log(userExists)
             if (userExists) {
                 throw new Error('incorrect login');
             }

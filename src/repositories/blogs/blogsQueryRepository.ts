@@ -4,7 +4,12 @@ import {ObjectId} from "mongodb";
 import {SortDirection} from "../../utils/queryParamsParser";
 
 export const BlogsQueryRepository = {
-    async findBlog(page: number, pageSize: number, name: string | null, sortBy: string, sortDirection: string): Promise<BlogListResponse> {
+    async findBlog(page: number,
+                   pageSize: number,
+                   name: string | null,
+                   sortBy: string,
+                   sortDirection: string
+    ): Promise<BlogListResponse> {
         const filter: any = {}
         if (name) {
             filter.name = {$regex: name, $options: 'i'}

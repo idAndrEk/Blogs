@@ -1,13 +1,11 @@
 import {Request, Response, Router} from "express";
-import {UserInputType, UserListResponse, UserViewType} from "../../types/UserType";
+import {UserListResponse, UserViewType} from "../../types/UserType";
 import {UsersQueryRepository} from "../../repositories/users/usersQueryRepository";
 import {parseQueryParams} from "../../utils/queryParamsParser";
 import {authBasicMiddleware} from "../../midlewares/auth/authMiddleware";
 import {usersService} from "../../domain/users/userService";
 import {UserValidation} from "../../validators/userValidator";
-import {validationResult} from 'express-validator';
 import {inputValidationMiddleware, validateObjectIdMiddleware} from "../../midlewares/input-validation-middleware";
-import {blogsService} from "../../domain/blogs/blogs-service";
 
 export const usersRouter = Router({})
 
@@ -52,7 +50,6 @@ usersRouter.post('/',
     async (req: Request, res: Response) => {
         try {
             const {login, password, email} = req.body
-            // console.log(req.body)
             const newUser: UserViewType = await usersService.createUser({login, password, email})
             return res.status(201).send(newUser)
         } catch (error) {

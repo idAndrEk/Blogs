@@ -1,20 +1,20 @@
-import {UsersQueryRepository} from "../../repositories/users/usersQueryRepository";
+import jwt from 'jsonwebtoken'
 
 const bcrypt = require('bcrypt')
+
 
 export const authService = {
 
     async passwordToSave(password: string) {
-        const hash = await bcrypt.hash(password, 10)
-        return hash
+        return await bcrypt.hash(password, 10)
     },
 
-    async checkCredentials(loginOrEmail: string, password: string): Promise<boolean> {
-        const user = await UsersQueryRepository.findCheckUserByLogin(loginOrEmail);
-        if (!user) {
-            return false
-        }
-        return await bcrypt.compare(password, user.passwordHash)
-    }
+    // async checkCredentials(loginOrEmail: string, password: string): Promise<boolean> {
+    //     const user = await UsersQueryRepository.findCheckUserByLogin(loginOrEmail);
+    //     if (!user) {
+    //         return false
+    //     }
+    //     return await bcrypt.compare(password, user.passwordHash)
+    // },
 
 }

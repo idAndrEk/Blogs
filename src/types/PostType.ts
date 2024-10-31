@@ -37,5 +37,18 @@ export type PostMongoType = {
     createdAt: Date;
 }
 
+export type CommentInputType = {
+    content: string;
+    postId: string;
+};
 
+export type CommentViewType = {
+    id: string;
+    content: string;
+    commentatorInfo: {
+        userId: string;
+        userLogin: string;
+    };
+    createdAt: Date;
+};
 

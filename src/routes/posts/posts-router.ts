@@ -6,7 +6,9 @@ import {postsService} from "../../domain/posts/posts-service";
 import {PostsQueryRepository} from "../../repositories/posts/postsQueryRepository";
 import {inputValidationMiddleware, validateObjectIdMiddleware} from "../../midlewares/input-validation-middleware";
 import {PostValidation} from "../../validators/postValidation";
-import {SortDirection} from "../../utils/queryParamsParser";
+import {parseQueryParams, SortDirection} from "../../utils/queryParamsParser";
+import {CommentValidation} from "../../validators/commentValidation";
+import {commentsService} from "../../domain/comments/comments-service";
 
 
 export const postsRouter = Router({})
@@ -20,11 +22,8 @@ const handleErrors = (res: Response, error: any) => {
 postsRouter.get('/',
     async (req: Request, res: Response) => {
         try {
-            const parsedPageNumber = req.query.pageNumber || 1;
-            const parsedPageSize = req.query.pageSize || 10;
+            const {sortBy, sortDirection, parsedPageNumber, parsedPageSize} = parseQueryParams(req)
             const queryTitle = req.query.title?.toString()
-            const sortBy = req.query.sortBy || 'CreatedAt';
-            const sortDirection: SortDirection = req.query.sortDirection === 'asc' ? SortDirection.Asc : SortDirection.Desc;
             const foundPosts: PostListResponse = await PostsQueryRepository.findPost(+parsedPageNumber, +parsedPageSize, queryTitle, sortBy.toString(), sortDirection)
             res.status(200).send(foundPosts)
         } catch (error) {
@@ -125,15 +124,34 @@ postsRouter.delete('/:id',
         try {
             const isDeleted = await postsService.deletePost(req.params.id)
             if (isDeleted) {
-                res.sendStatus(204);
-                return
-            } else {
-                res.status(404).json({error: 'Post not found'});
-                return
+                return res.sendStatus(204);
+
             }
+            return res.status(404).json({error: 'Post not found'});
         } catch (error) {
             handleErrors(res, error);
             return
         }
     })
 
+//comments
+
+// postsRouter.post('/:id/comments',
+//     CommentValidation,
+//     async (req: Request, res: Response) => {
+//         try {
+//             const content = req.body
+//             const postId = req.params.id
+//             const postById = PostsQueryRepository.findPostById(postId)
+//             if (!postById) {
+//                 return res.sendStatus(404)
+//             }
+//             const newComment = await commentsService.createComments(postId, content)
+//             if (newComment) {
+//                 return res.status(201).send(newComment);
+//             }
+//             return res.sendStatus(404);
+//         } catch (error) {
+//             return handleErrors(res, error);
+//         }
+//     })
