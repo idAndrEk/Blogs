@@ -128,8 +128,8 @@ blogsRouter.get('/:id/posts',
 blogsRouter.post('/:id/posts',
     validateObjectIdMiddleware,
     authBasicMiddleware,
-    PostBlogByIdValidation,
-    // PostValidation,
+    PostBlogByIdValidation, //???
+    // PostValidation, //???
     inputValidationMiddleware,
     async (req: Request, res: Response) => {
         try {
