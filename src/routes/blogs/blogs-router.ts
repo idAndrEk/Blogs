@@ -10,6 +10,7 @@ import {inputValidationMiddleware, validateObjectIdMiddleware} from "../../midle
 import {BlogValidation} from "../../validators/blogValidation";
 import {PostValidation} from "../../validators/postValidation";
 import {parseQueryParams} from "../../utils/queryParamsParser";
+import {PostBlogByIdValidation} from "../../validators/PostBlogByIdValidation";
 
 
 export const blogsRouter = Router({})
@@ -127,8 +128,8 @@ blogsRouter.get('/:id/posts',
 blogsRouter.post('/:id/posts',
     validateObjectIdMiddleware,
     authBasicMiddleware,
-    // PostBlogByIdValidation,
-    PostValidation,
+    PostBlogByIdValidation,
+    // PostValidation,
     inputValidationMiddleware,
     async (req: Request, res: Response) => {
         try {
